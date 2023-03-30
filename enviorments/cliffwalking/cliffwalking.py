@@ -1,4 +1,5 @@
 import pygame
+from copy import copy
 
 class CliffwalkingEnviorment():
     px_width = 768
@@ -17,7 +18,8 @@ class CliffwalkingEnviorment():
         self.clock = pygame.time.Clock()
         
         # Posición inicial del personaje
-        self.player_position = player_position
+        self.initial_position = copy(player_position)
+        self.player_position = copy(player_position)        
 
         # Fuente
         self.font = pygame.font.Font(None, 20)
@@ -54,7 +56,7 @@ class CliffwalkingEnviorment():
         """
         if self.player_position in self.red_flags: 
             self.rewards+=-100
-            self.player_position = [0, 3]
+            self.player_position = copy(self.initial_position)
         elif self.player_position in self.yellow_flags: self.rewards+=-100
         else: self.rewards+=-1
         text = 'Recompensa Acumulada: {0}'.format(self.rewards)
