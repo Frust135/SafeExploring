@@ -21,7 +21,8 @@ def cliff_option():
         yellow_flags=yellow_flags,
         green_flags=green_flags,
     )    
-    env.run()
+    reward = env.run()
+    print(reward)
 
 def option2():
     return True

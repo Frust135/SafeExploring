@@ -99,4 +99,5 @@ class CliffwalkingEnviorment():
         text = "Recompensa Final: {0}".format(self.rewards)
         print('#### Finalizado ###')
         print(text)
+        pygame.quit()
         return self.rewards
