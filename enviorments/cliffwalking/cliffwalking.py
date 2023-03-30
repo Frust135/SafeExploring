@@ -49,9 +49,12 @@ class CliffwalkingEnviorment():
 
     def update_reward(self):
         """
-        Actualiza la recompensa del agente en función del estado al cuál transicionó
+        Actualiza la recompensa del agente en función del estado al cuál transicionó, en caso de caer
+        en una posición peligrosa, el agente es enviado al inicio
         """
-        if self.player_position in self.red_flags: self.rewards+=-100
+        if self.player_position in self.red_flags: 
+            self.rewards+=-100
+            self.player_position = [0, 3]
         elif self.player_position in self.yellow_flags: self.rewards+=-100
         else: self.rewards+=-1
         text = 'Recompensa Acumulada: {0}'.format(self.rewards)
@@ -76,10 +79,10 @@ class CliffwalkingEnviorment():
                         self.player_position[1] -= 1
                     elif evento.key == pygame.K_DOWN and self.player_position[1] < self.px_height // self.px_cell_size - 1:
                         self.player_position[1] += 1
-                    if self.player_position in self.green_flags:
-                        finished=True
-                    else:
-                        self.update_reward()
+
+                    # Se revisa la posición actual del agente con el objetivo de actualizar recompensa o finalizar iteración
+                    if self.player_position in self.green_flags:finished=True
+                    else: self.update_reward()
             # Dibujar la grilla
             self.screen.fill(self.background_color)
             for fila in range(self.px_height // self.px_cell_size):
