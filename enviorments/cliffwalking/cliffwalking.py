@@ -18,6 +18,8 @@ class CliffwalkingEnviorment():
         # Posición inicial del personaje
         self.player_position = player_position
 
+        # Fuente
+        self.font = pygame.font.Font(None, 20)
         # Posición de las banderas
         self.red_flags = red_flags
         self.yellow_flags = yellow_flags
@@ -26,14 +28,20 @@ class CliffwalkingEnviorment():
     def place_red_flags(self, red_flags):
         for red_flag in red_flags:
             pygame.draw.rect(self.screen, (255, 0, 0), (red_flag[0] * self.px_cell_size, red_flag[1] * self.px_cell_size, self.px_cell_size, self.px_cell_size), 3)
+            text_surface = self.font.render("-100", True, (255, 0, 0))
+            self.screen.blit(text_surface, (red_flag[0] * self.px_cell_size + 18, red_flag[1] * self.px_cell_size + 24))
 
     def place_yellow_flags(self, yellow_flags):
         for yellow_flag in yellow_flags:
             pygame.draw.rect(self.screen, (204, 204, 0), (yellow_flag[0] * self.px_cell_size, yellow_flag[1] * self.px_cell_size, self.px_cell_size, self.px_cell_size), 3)
+            # text_surface = self.font.render("-100", True, (204, 204, 0))
+            # self.screen.blit(text_surface, (yellow_flag[0] * self.px_cell_size + 18, yellow_flag[1] * self.px_cell_size + 24))
 
     def place_green_flags(self, green_flags):
         for green_flag in green_flags:
             pygame.draw.rect(self.screen, (0, 255, 0), (green_flag[0] * self.px_cell_size, green_flag[1] * self.px_cell_size, self.px_cell_size, self.px_cell_size), 3)
+            # text_surface = self.font.render("-100", True, (0, 255, 0))
+            # self.screen.blit(text_surface, (green_flag[0] * self.px_cell_size + 18, green_flag[1] * self.px_cell_size + 24))
     
     def run(self):
         while True:
@@ -68,24 +76,4 @@ class CliffwalkingEnviorment():
             self.place_green_flags(self.green_flags)
 
             # Actualizar la pantalla
-            pygame.display.update()
-
-
-if __name__ == "__main__":
-    red_flags = [
-        [1, 3], [2, 3], [3, 3], [4, 3], [5, 3],
-        [6, 3], [7, 3], [8, 3], [9, 3], [10, 3],
-    ]
-
-    yellow_flags = []
-
-    green_flags = [[11, 3]]
-
-    env = CliffwalkingEnviorment(
-        player_position=[0, 3],
-        red_flags=red_flags,
-        yellow_flags=yellow_flags,
-        green_flags=green_flags,
-    )
-    
-    env.run()
+            pygame.display.update()    
