@@ -1,11 +1,12 @@
 import tkinter as tk
-from enviorments.cliffwalking import cliffwalking
 
 def cliff_option():
     """
     Crea el entorno de CliffWalking con el agente en la posición (0, 3), y una meta en la posición (11, 3),
     y estados peligrosos desde la posición (1, 3) hasta la (10, 3)
     """
+    from enviorments.cliffwalking import cliffwalking
+    from models.cliffwalking import model
     red_flags = [
         [1, 3], [2, 3], [3, 3], [4, 3], [5, 3],
         [6, 3], [7, 3], [8, 3], [9, 3], [10, 3],
@@ -15,14 +16,16 @@ def cliff_option():
 
     green_flags = [[11, 3]]
 
-    env = cliffwalking.CliffwalkingEnviorment(
-        player_position=[0, 3],
-        red_flags=red_flags,
-        yellow_flags=yellow_flags,
-        green_flags=green_flags,
-    )    
-    reward = env.run()
-    print(reward)
+    # env = cliffwalking.CliffwalkingEnviorment(
+    #     player_position=[0, 3],
+    #     red_flags=red_flags,
+    #     yellow_flags=yellow_flags,
+    #     green_flags=green_flags,
+    # )
+    model_qlearning = model.QLearningModel(48, 4)
+    environment = model.Environment()
+    # reward = env.run()
+    # print(reward)
 
 def option2():
     return True
