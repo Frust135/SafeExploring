@@ -1,4 +1,6 @@
 import tkinter as tk
+import numpy as np
+
 
 def cliff_option():
     """
@@ -23,6 +25,14 @@ def cliff_option():
     #     green_flags=green_flags,
     # )
     model_sarsa = model.SarsaModel(48, 4)
+    scores = []
+    for i in range(500):
+        current_state = np.random.randint(0, model_sarsa.n_states)
+        available_act = model_sarsa.available_actions(current_state)
+        action = model_sarsa.get_action(available_act) 
+        score = model_sarsa.update(current_state,action, 0.7)
+        scores.append(score)
+    print(score)
     # reward = env.run()
     # print(reward)
 

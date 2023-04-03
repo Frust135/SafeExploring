@@ -6,10 +6,13 @@ class SarsaModel():
         
         self.n_states = n_states
         self.n_actions = n_actions
-        #self.Q = np.zeros((self.n_states, self.n_actions))
+
+        self.alpha = 0.1
+        self.gamma = 0.99
+        self.epsilon = 0.1
 
         self.state_policy = self.create_state_policy()
-        self.policy = self.initialize_policy()
+        self.Q = self.initialize_policy()
         self.modify_policy_by_state()
     
     def initialize_policy(self):
@@ -55,11 +58,23 @@ class SarsaModel():
         for row_index in range(0, self.n_states):
             for col_index in range(0, self.n_actions):
                 if self.state_policy[row_index][col_index] == 0:
-                    self.policy[row_index][col_index] = 0
-                    row_aux = self.policy[row_index]
+                    self.Q[row_index][col_index] = 0
+                    row_aux = self.Q[row_index]
                     row_aux[row_aux!=0] = 1/len(row_aux[row_aux!=0])
-                    self.policy[row_index] = row_aux
+                    self.Q[row_index] = row_aux
         return True
+    
+    def available_actions(self, state):
+        current_state_row = self.Q[state,]
+        av_act = np.where(current_state_row >= 0)[0]
+        return av_act
+
+    def get_action(self, available_act):
+        next_action = int(np.random.choice(available_act,1))
+        return next_action
+
+    def update(self, current_state, action, gamma):
+        pass
     
     
     
