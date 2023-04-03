@@ -23,8 +23,6 @@ def cliff_option():
     #     green_flags=green_flags,
     # )
     model_sarsa = model.SarsaModel(48, 4)
-    environment = model.Environment()
-    model_sarsa.create_state_policy(environment.matrix)
     # reward = env.run()
     # print(reward)
 
