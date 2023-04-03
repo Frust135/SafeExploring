@@ -22,8 +22,9 @@ def cliff_option():
     #     yellow_flags=yellow_flags,
     #     green_flags=green_flags,
     # )
-    model_qlearning = model.QLearningModel(48, 4)
+    model_sarsa = model.SarsaModel(48, 4)
     environment = model.Environment()
+    model_sarsa.create_state_policy(environment.matrix)
     # reward = env.run()
     # print(reward)
 
