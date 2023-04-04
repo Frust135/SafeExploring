@@ -1,14 +1,16 @@
 import tkinter as tk
-import numpy as np
-
+from threading import Thread
 
 def cliff_option():
     """
     Crea el entorno de CliffWalking con el agente en la posición (0, 3), y una meta en la posición (11, 3),
     y estados peligrosos desde la posición (1, 3) hasta la (10, 3)
     """
-    from enviorments.cliffwalking import cliffwalking
+    from environment.cliffwalking import cliffwalking
     from models.cliffwalking import model
+    print('#'*20)
+
+    # Escenario
     red_flags = [
         [1, 3], [2, 3], [3, 3], [4, 3], [5, 3],
         [6, 3], [7, 3], [8, 3], [9, 3], [10, 3],
@@ -18,25 +20,25 @@ def cliff_option():
 
     green_flags = [[11, 3]]
 
-    # env = cliffwalking.CliffwalkingEnviorment(
-    #     player_position=[0, 3],
-    #     red_flags=red_flags,
-    #     yellow_flags=yellow_flags,
-    #     green_flags=green_flags,
-    # )
-    model_sarsa = model.SarsaModel(48, 4)
-    scores = []
-    for i in range(500):
-        current_state = np.random.randint(0, model_sarsa.n_states)
-        available_act = model_sarsa.available_actions(current_state)
-        action = model_sarsa.get_action(available_act) 
-        score = model_sarsa.update(current_state,action, 0.7)
-        scores.append(score)
-    print(score)
-    # reward = env.run()
-    # print(reward)
+    env = cliffwalking.CliffwalkingEnviorment(
+        player_position=[0, 3],
+        red_flags=red_flags,
+        yellow_flags=yellow_flags,
+        green_flags=green_flags,
+    )
+
+    # Sarsa
+    n_states = 48
+    n_actions = 4
+    initial_state = 37
+    goal_state = 48
+    model_sarsa = model.SarsaModel(n_states, n_actions, initial_state, goal_state)
+    scores, actions = model_sarsa.run()
+    print(actions)
+    env.run()
 
 def option2():
+    print('#'*20)
     return True
 
 if __name__ == "__main__":

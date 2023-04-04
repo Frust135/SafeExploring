@@ -105,4 +105,4 @@ class CliffwalkingEnviorment():
         print('#### Finalizado ###')
         print(text)
         pygame.quit()
-        return self.rewards
+        return True

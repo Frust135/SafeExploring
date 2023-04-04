@@ -1,15 +1,18 @@
 import numpy as np
 
 class SarsaModel():
-    def __init__(self, n_states, n_actions):
+    def __init__(self, n_states, n_actions, initial_state, goal_state):
         self.environment = Environment()
-        
+
         self.n_states = n_states
         self.n_actions = n_actions
 
         self.alpha = 0.1
         self.gamma = 0.99
         self.epsilon = 0.1
+
+        self.initial_state = initial_state
+        self.goal_state = goal_state
 
         self.state_policy = self.create_state_policy()
         self.Q = self.initialize_policy()
@@ -73,8 +76,34 @@ class SarsaModel():
         next_action = int(np.random.choice(available_act,1))
         return next_action
 
-    def update(self, current_state, action, gamma):
-        pass
+    def update(self, current_state, action):
+        next_state = int(self.state_policy[current_state-1, action])
+        finished = False
+        # Meta
+        if next_state == self.goal_state:
+            finished = True
+            reward = 0
+        # Acantilado
+        elif next_state >= 38 and next_state <=47: 
+            reward = -100
+            next_state = self.initial_state
+        # Otros estados
+        else: 
+            reward = -1
+        return reward, next_state, finished
+    
+    def run(self):        
+        scores = []
+        actions = []
+        current_state = self.initial_state
+        for i in range(500):
+            available_act = self.available_actions(current_state)
+            action = self.get_action(available_act)
+            score, current_state, finished = self.update(current_state, action)
+            actions.append(action)
+            if finished: break
+            scores.append(score)            
+        return scores, actions
     
     
     
