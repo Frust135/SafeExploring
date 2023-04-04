@@ -67,16 +67,25 @@ class SarsaModel():
                     self.Q[row_index] = row_aux
         return True
     
-    def available_actions(self, state):
-        current_state_row = self.Q[state,]
-        av_act = np.where(current_state_row >= 0)[0]
-        return av_act
+    def get_prob_actions(self, state):
+        '''
+        Retorna las probabilidades de cada acción
+        '''
+        current_state_row = self.Q[state-1,]
+        return current_state_row
 
-    def get_action(self, available_act):
-        next_action = int(np.random.choice(available_act,1))
+    def get_action(self, prob_actions):
+        '''
+        Obtiene una acción basada en las probabilidades de cada acción
+        '''
+        actions = [0, 1, 2, 3]
+        next_action = int(np.random.choice(actions, p=prob_actions))
         return next_action
 
     def update(self, current_state, action):
+        '''
+        Realiza la acción y actualiza la política, la tabla Q, y el nuevo estado
+        '''
         next_state = int(self.state_policy[current_state-1, action])
         finished = False
         # Meta
@@ -96,13 +105,13 @@ class SarsaModel():
         scores = []
         actions = []
         current_state = self.initial_state
-        for i in range(500):
-            available_act = self.available_actions(current_state)
-            action = self.get_action(available_act)
+        for i in range(100):
+            prob_actions = self.get_prob_actions(current_state)            
+            action = self.get_action(prob_actions)
             score, current_state, finished = self.update(current_state, action)
-            actions.append(action)
+            actions.append(action)            
             if finished: break
-            scores.append(score)            
+            scores.append(score)
         return scores, actions
     
     

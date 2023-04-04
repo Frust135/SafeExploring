@@ -63,28 +63,24 @@ class CliffwalkingEnviorment():
         print(text)
         return True
     
-    def run(self):
-        finished = False
-        while not finished:
-            for evento in pygame.event.get():
-                if evento.type == pygame.QUIT:
-                    pygame.quit()
-                    quit()
-                elif evento.type == pygame.KEYDOWN:
-                    
-                    # Mover el personaje
-                    if evento.key == pygame.K_LEFT and self.player_position[0] > 0:
-                        self.player_position[0] -= 1
-                    elif evento.key == pygame.K_RIGHT and self.player_position[0] < self.px_width // self.px_cell_size - 1:
-                        self.player_position[0] += 1
-                    elif evento.key == pygame.K_UP and self.player_position[1] > 0:
-                        self.player_position[1] -= 1
-                    elif evento.key == pygame.K_DOWN and self.player_position[1] < self.px_height // self.px_cell_size - 1:
-                        self.player_position[1] += 1
-
-                    # Se revisa la posición actual del agente con el objetivo de actualizar recompensa o finalizar iteración
-                    if self.player_position in self.green_flags:finished=True
-                    else: self.update_reward()
+    def run(self, actions):        
+        from time import sleep
+        for action in actions:
+            sleep(.1)
+            # Izquierda
+            if action == 0: 
+                self.player_position[0] -= 1
+            # Arriba
+            elif action == 1: 
+                self.player_position[1] -= 1
+            # Derecha
+            elif action == 2: 
+                self.player_position[0] += 1
+            # Abajo
+            elif action == 3: 
+                self.player_position[1] += 1
+            
+            self.update_reward()
             # Dibujar la grilla
             self.screen.fill(self.background_color)
             for fila in range(self.px_height // self.px_cell_size):

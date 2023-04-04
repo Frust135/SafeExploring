@@ -34,8 +34,8 @@ def cliff_option():
     goal_state = 48
     model_sarsa = model.SarsaModel(n_states, n_actions, initial_state, goal_state)
     scores, actions = model_sarsa.run()
-    print(actions)
-    env.run()
+    env.run(actions)
+    print(sum(scores))
 
 def option2():
     print('#'*20)
