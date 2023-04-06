@@ -80,7 +80,13 @@ class SarsaModel():
         de la tabla Q
         '''
         prob_actions = self.get_prob_actions(state)
-        action = np.argmax(prob_actions + np.random.randn(1, self.n_actions) * (1.0 / (episode + 1)))
+        q_values_list = prob_actions + np.random.randn(1, self.n_actions) * (1.0 / (episode + 1))
+        while True:
+            action = np.argmax(q_values_list)
+            if prob_actions[action] == 0:
+                q_values_list[0][action] = np.min(q_values_list[0]) - 1
+            else:
+                break 
         return action
 
     def update(self, current_state, action):
@@ -92,7 +98,7 @@ class SarsaModel():
         # Meta
         if next_state == self.goal_state:
             finished = True
-            reward = 0
+            reward = 100
         # Acantilado
         elif next_state >= 38 and next_state <=47: 
             reward = -100
@@ -102,23 +108,21 @@ class SarsaModel():
             reward = -1
         return reward, next_state, finished
     
-    def run(self):
+    def run(self, episode):
         rewards = []
         actions = []
         state = self.initial_state
-        action = self.get_action(state, 1)
-        for i in range(50):
-            print(state, action)
+        action = self.get_action(state, episode)
+        for i in range(500):
+            actions.append(action)
             reward, next_state, finished = self.update(state, action)
-            next_action = self.get_action(next_state, i)
-
+            next_action = self.get_action(next_state, episode)
+            if next_state < 1: print('aaaaaa')
             self.Q[state-1, action] = self.Q[state-1, action] + self.alpha * (reward + self.gamma * self.Q[next_state-1, next_action] - self.Q[state-1, action])            
             action = next_action
-            state = next_state
-            actions.append(action)            
+            state = next_state            
             if finished: break
             rewards.append(reward)
-        print(self.Q)
         return rewards, actions
     
     

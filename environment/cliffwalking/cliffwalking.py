@@ -59,14 +59,14 @@ class CliffwalkingEnviorment():
             self.player_position = copy(self.initial_position)
         elif self.player_position in self.yellow_flags: self.rewards+=-100
         else: self.rewards+=-1
-        text = 'Recompensa Acumulada: {0}'.format(self.rewards)
-        print(text)
+        # text = 'Recompensa Acumulada: {0}'.format(self.rewards)
+        # print(text)
         return True
     
     def run(self, actions):        
         from time import sleep
         for action in actions:
-            sleep(.1)
+            sleep(.05)
             # Izquierda
             if action == 0: 
                 self.player_position[0] -= 1
@@ -97,8 +97,8 @@ class CliffwalkingEnviorment():
 
             # Actualizar la pantalla
             pygame.display.update()
-        text = "Recompensa Final: {0}".format(self.rewards)
-        print('#### Finalizado ###')
-        print(text)
+        # text = "Recompensa Final: {0}".format(self.rewards)
+        # print('#### Finalizado ###')
+        # print(text)
         pygame.quit()
         return True

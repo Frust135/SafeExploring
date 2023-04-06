@@ -18,14 +18,7 @@ def cliff_option():
 
     yellow_flags = []
 
-    green_flags = [[11, 3]]
-
-    env = cliffwalking.CliffwalkingEnviorment(
-        player_position=[0, 3],
-        red_flags=red_flags,
-        yellow_flags=yellow_flags,
-        green_flags=green_flags,
-    )
+    green_flags = [[11, 3]]    
 
     # Sarsa
     n_states = 48
@@ -33,9 +26,18 @@ def cliff_option():
     initial_state = 37
     goal_state = 48
     model_sarsa = model.SarsaModel(n_states, n_actions, initial_state, goal_state)
-    scores, actions = model_sarsa.run()
-    env.run(actions)
-    print(sum(scores))
+    for episode in range(150):
+        actions = []
+        env = cliffwalking.CliffwalkingEnviorment(
+            player_position=[0, 3],
+            red_flags=red_flags,
+            yellow_flags=yellow_flags,
+            green_flags=green_flags,
+        )
+        scores, actions = model_sarsa.run(episode)
+        env.run(actions)
+        text = 'Episodio: {0} - Recompensa acumulada: {1}'.format(episode, sum(scores))
+        print(text)
 
 def option2():
     print('#'*20)
