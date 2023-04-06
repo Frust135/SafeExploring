@@ -71,16 +71,17 @@ class SarsaModel():
         '''
         Retorna las probabilidades de cada acción
         '''
-        current_state_row = self.Q[state-1,]
+        current_state_row = self.Q[state-1,]                
         return current_state_row
 
-    def get_action(self, prob_actions):
+    def get_action(self, state, episode):
         '''
-        Obtiene una acción basada en las probabilidades de cada acción
+        Obtiene una acción en función del estado actual e iteración del agente, esta acción se obtiene
+        de la tabla Q
         '''
-        actions = [0, 1, 2, 3]
-        next_action = int(np.random.choice(actions, p=prob_actions))
-        return next_action
+        prob_actions = self.get_prob_actions(state)
+        action = np.argmax(prob_actions + np.random.randn(1, self.n_actions) * (1.0 / (episode + 1)))
+        return action
 
     def update(self, current_state, action):
         '''
@@ -101,18 +102,24 @@ class SarsaModel():
             reward = -1
         return reward, next_state, finished
     
-    def run(self):        
-        scores = []
+    def run(self):
+        rewards = []
         actions = []
-        current_state = self.initial_state
-        for i in range(100):
-            prob_actions = self.get_prob_actions(current_state)            
-            action = self.get_action(prob_actions)
-            score, current_state, finished = self.update(current_state, action)
+        state = self.initial_state
+        action = self.get_action(state, 1)
+        for i in range(50):
+            print(state, action)
+            reward, next_state, finished = self.update(state, action)
+            next_action = self.get_action(next_state, i)
+
+            self.Q[state-1, action] = self.Q[state-1, action] + self.alpha * (reward + self.gamma * self.Q[next_state-1, next_action] - self.Q[state-1, action])            
+            action = next_action
+            state = next_state
             actions.append(action)            
             if finished: break
-            scores.append(score)
-        return scores, actions
+            rewards.append(reward)
+        print(self.Q)
+        return rewards, actions
     
     
     
