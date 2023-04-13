@@ -9,7 +9,7 @@ class CliffwalkingEnviorment():
     player_color = (0, 0, 255)
     rewards = 0
 
-    def __init__(self, player_position=[0, 0], red_flags=[], yellow_flags=[], green_flags=[]):
+    def __init__(self, player_position=[0, 0], red_flags=[], green_flags=[]):
         
         # Inicializar juego y la pantalla
         pygame.init()
@@ -25,7 +25,6 @@ class CliffwalkingEnviorment():
         self.font = pygame.font.Font(None, 20)
         # Posición de las banderas
         self.red_flags = red_flags
-        self.yellow_flags = yellow_flags
         self.green_flags = green_flags        
 
     def place_red_flags(self, red_flags):
@@ -33,13 +32,6 @@ class CliffwalkingEnviorment():
             pygame.draw.rect(self.screen, (255, 0, 0), (red_flag[0] * self.px_cell_size, red_flag[1] * self.px_cell_size, self.px_cell_size, self.px_cell_size), 3)
             text_surface = self.font.render("-100", True, (255, 0, 0))
             self.screen.blit(text_surface, (red_flag[0] * self.px_cell_size + 18, red_flag[1] * self.px_cell_size + 24))
-        return True
-
-    def place_yellow_flags(self, yellow_flags):
-        for yellow_flag in yellow_flags:
-            pygame.draw.rect(self.screen, (204, 204, 0), (yellow_flag[0] * self.px_cell_size, yellow_flag[1] * self.px_cell_size, self.px_cell_size, self.px_cell_size), 3)
-            # text_surface = self.font.render("-100", True, (204, 204, 0))
-            # self.screen.blit(text_surface, (yellow_flag[0] * self.px_cell_size + 18, yellow_flag[1] * self.px_cell_size + 24))
         return True
 
     def place_green_flags(self, green_flags):
@@ -57,7 +49,6 @@ class CliffwalkingEnviorment():
         if self.player_position in self.red_flags: 
             self.rewards+=-100
             self.player_position = copy(self.initial_position)
-        elif self.player_position in self.yellow_flags: self.rewards+=-100
         else: self.rewards+=-1
         # text = 'Recompensa Acumulada: {0}'.format(self.rewards)
         # print(text)
@@ -92,7 +83,6 @@ class CliffwalkingEnviorment():
 
             # Dibujar banderas
             self.place_red_flags(self.red_flags)
-            self.place_yellow_flags(self.yellow_flags)
             self.place_green_flags(self.green_flags)
 
             # Actualizar la pantalla

@@ -1,11 +1,16 @@
 import numpy as np
 
 class SarsaModel():
-    def __init__(self, n_states, n_actions, initial_state, goal_state):
-        self.environment = Environment()
+    def __init__(self, col_len, row_len, range_danger, n_states, n_actions, initial_state, goal_state):
+        self.environment = Environment(col_len, row_len)
+
+        self.col_len = col_len
+        self.row_len = row_len
 
         self.n_states = n_states
         self.n_actions = n_actions
+
+        self.range_danger = range_danger
 
         self.alpha = 0.1
         self.gamma = 0.99
@@ -45,10 +50,10 @@ class SarsaModel():
                     if not row_index == 0:
                         if matrix_problem[row_index-1][col_index] > 0: matrix[int(value-1)][1] = matrix_problem[row_index-1][col_index]
                     # Derecha
-                    if not col_index == 11:
+                    if not col_index == (self.col_len-1):
                         if row_problem[col_index+1] > 0: matrix[int(value-1)][2] = row_problem[col_index+1]   
                     # Abajo
-                    if not row_index == 3:
+                    if not row_index == (self.row_len-1):
                         if matrix_problem[row_index+1][col_index] > 0: matrix[int(value-1)][3] = matrix_problem[row_index+1][col_index]
         self.state_policy = matrix
         return matrix
@@ -100,7 +105,7 @@ class SarsaModel():
             finished = True
             reward = 100
         # Acantilado
-        elif next_state >= 38 and next_state <=47: 
+        elif next_state in self.range_danger: 
             reward = -100
             next_state = self.initial_state
         # Otros estados
@@ -117,8 +122,7 @@ class SarsaModel():
             actions.append(action)
             reward, next_state, finished = self.update(state, action)
             next_action = self.get_action(next_state, episode)
-            if next_state < 1: print('aaaaaa')
-            self.Q[state-1, action] = self.Q[state-1, action] + self.alpha * (reward + self.gamma * self.Q[next_state-1, next_action] - self.Q[state-1, action])            
+            self.Q[state-1, action] = self.Q[state-1, action] + self.alpha * (reward + self.gamma * self.Q[next_state-1, next_action] - self.Q[state-1, action])
             action = next_action
             state = next_state            
             if finished: break
@@ -128,9 +132,9 @@ class SarsaModel():
     
     
 class Environment():
-    def __init__(self):
-        self.matrix_col_len = 12
-        self.matrix_row_len = 4
+    def __init__(self, col_len, row_len):
+        self.matrix_col_len = col_len
+        self.matrix_row_len = row_len
         self.matrix = self.create_matrix()
     
     def create_matrix(self):
