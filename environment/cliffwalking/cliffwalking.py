@@ -2,15 +2,14 @@ import pygame
 from copy import copy
 
 class CliffwalkingEnviorment():
-    px_width = 768
-    px_height = 256
     px_cell_size = 64
     background_color = (255, 255, 255)
     player_color = (0, 0, 255)
     rewards = 0
 
-    def __init__(self, player_position=[0, 0], red_flags=[], green_flags=[]):
-        
+    def __init__(self, px_width, px_height, player_position=[0, 0], red_flags=[], green_flags=[]):
+        self.px_width = px_width
+        self.px_height = px_height
         # Inicializar juego y la pantalla
         pygame.init()
         self.screen = pygame.display.set_mode((self.px_width, self.px_height))

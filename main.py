@@ -29,9 +29,11 @@ def cliff_walking_normal():
     for episode in range(150):
         actions = []
         env = cliffwalking.CliffwalkingEnviorment(
+            px_width=768,
+            px_height=256,
             player_position=[0, 3],
             red_flags=red_flags,
-            green_flags=green_flags,
+            green_flags=green_flags,            
         )
         scores, actions = model_sarsa.run(episode)
         env.run(actions)
@@ -47,23 +49,25 @@ def cliff_walking_controlled():
 
     # Escenario
     red_flags = [
-        [1, 3], [2, 3]
+        [1, 3], [2, 3], [3, 3], [4, 3]
     ]
 
-    green_flags = [[3, 3]]    
+    green_flags = [[5, 3]]
 
     # Sarsa
-    n_states = 16
+    n_states = 24
     n_actions = 4
-    initial_state = 13
-    goal_state = 16
-    col_environment = 4
+    initial_state = 19
+    goal_state = 24
+    col_environment = 6
     row_environment = 4
-    range_danger = [14, 15]
+    range_danger = [20, 21, 22, 23]
     model_sarsa = model.SarsaModel(col_environment, row_environment, range_danger, n_states, n_actions, initial_state, goal_state)
     for episode in range(150):
         actions = []
         env = cliffwalking.CliffwalkingEnviorment(
+            px_width=384,
+            px_height=256,
             player_position=[0, 3],
             red_flags=red_flags,
             green_flags=green_flags,
