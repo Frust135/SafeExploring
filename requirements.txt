@@ -1,3 +1,5 @@
 pygame==2.2.0
 tk==0.1.0
 pynput==1.7.6
+
+# https://github.com/openai/box2d-py/blob/master/INSTALL.md

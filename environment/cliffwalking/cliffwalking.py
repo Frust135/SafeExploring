@@ -36,8 +36,6 @@ class CliffwalkingEnviorment():
     def place_green_flags(self, green_flags):
         for green_flag in green_flags:
             pygame.draw.rect(self.screen, (0, 255, 0), (green_flag[0] * self.px_cell_size, green_flag[1] * self.px_cell_size, self.px_cell_size, self.px_cell_size), 3)
-            # text_surface = self.font.render("-100", True, (0, 255, 0))
-            # self.screen.blit(text_surface, (green_flag[0] * self.px_cell_size + 18, green_flag[1] * self.px_cell_size + 24))
         return True
 
     def update_reward(self):
@@ -86,8 +84,5 @@ class CliffwalkingEnviorment():
 
             # Actualizar la pantalla
             pygame.display.update()
-        # text = "Recompensa Final: {0}".format(self.rewards)
-        # print('#### Finalizado ###')
-        # print(text)
         pygame.quit()
         return True
