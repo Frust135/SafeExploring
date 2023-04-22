@@ -23,7 +23,13 @@ def cliff_walking_normal(controlled_Q=None):
     row_environment = 4
     range_danger = [38, 39, 40, 41, 42, 43, 44, 45, 46, 47]
     model_sarsa = model.SarsaModel(col_environment, row_environment, range_danger,  n_states, n_actions, initial_state, goal_state, controlled_Q)
-    for episode in range(150):
+
+    # states_array = []
+    # actions_array = []
+    # qvalues_array = []
+    # finished_count = 0
+    # danger_state_array = []
+    for episode in range(100):
         actions = []
         env = CliffwalkingEnviorment(
             px_width=768,
@@ -36,13 +42,24 @@ def cliff_walking_normal(controlled_Q=None):
         env.run(actions)
         text = 'Episodio: {0} - Recompensa acumulada: {1}'.format(episode, sum(rewards))
         print(text)
+    #     states, actions, qvalues, danger_state, rewards = model_sarsa.run_csv(episode)
+    #     states_array.extend(states)
+    #     actions_array.extend(actions)
+    #     qvalues_array.extend(qvalues)
+    #     danger_state_array.extend(danger_state)
+
+    #     if rewards == -12: finished_count += 1
+    #     if finished_count == 5: break
+    # col = ['Estado', 'Acción', 'Q-Value', 'Estado Peligroso']
+    # from utils import csv
+    # csv.create_csv(col, states_array, actions_array, qvalues_array, danger_state_array)
     return True
 
 def cliff_walking_controlled():
     """
     Crea el entorno de controlado de CliffWalking
     """
-    from cliffwalking import CliffwalkingEnviorment
+    from .cliffwalking import CliffwalkingEnviorment
     from models.cliffwalking import model
 
     # Escenario
@@ -61,7 +78,14 @@ def cliff_walking_controlled():
     row_environment = 4
     range_danger = [20, 21, 22, 23]
     model_sarsa_controlled = model.SarsaModel(col_environment, row_environment, range_danger, n_states, n_actions, initial_state, goal_state)
-    for episode in range(40):
+
+    states_array = []
+    actions_array = []
+    qvalues_array = []
+    finished_count = 0
+    danger_state_array = []
+
+    for episode in range(100):
         actions = []
         env = CliffwalkingEnviorment(
             px_width=384,
@@ -70,9 +94,20 @@ def cliff_walking_controlled():
             red_flags=red_flags,
             green_flags=green_flags,
         )
-        rewards, actions = model_sarsa_controlled.run(episode)
-        env.run(actions)
-        text = 'Episodio: {0} - Recompensa acumulada: {1}'.format(episode, sum(rewards))
-        print(text)
-    cliff_walking_normal(model_sarsa_controlled.Q)
+        # rewards, actions = model_sarsa_controlled.run(episode)
+        # env.run(actions)
+        # text = 'Episodio: {0} - Recompensa acumulada: {1}'.format(episode, sum(rewards))
+        # print(text)
+        states, actions, qvalues, danger_state, rewards = model_sarsa_controlled.run_csv(episode)
+        states_array.extend(states)
+        actions_array.extend(actions)
+        qvalues_array.extend(qvalues)
+        danger_state_array.extend(danger_state)
+        print(rewards)
+        if rewards == -6: finished_count += 1
+        if finished_count == 5: break
+    col = ['Estado', 'Acción', 'Q-Value', 'Estado Peligroso']
+    from utils import csv
+    csv.create_csv(col, states_array, actions_array, qvalues_array, danger_state_array)
+    # cliff_walking_normal(model_sarsa_controlled.Q)
     return True

@@ -144,7 +144,7 @@ class SarsaModel():
         
         state = self.initial_state
         action = self.get_action(state, episode)
-        for i in range(20):            
+        for i in range(150):            
             reward, next_state, finished = self.update(state, action)
             next_action = self.get_action(next_state, episode)
             self.Q[state-1, action] = self.Q[state-1, action] + self.alpha * (reward + self.gamma * self.Q[next_state-1, next_action] - self.Q[state-1, action])
@@ -161,8 +161,9 @@ class SarsaModel():
             state = next_state            
             
             if finished: break
+            rewards.append(reward)
 
-        return states, actions, qvalues, danger_state, finished
+        return states, actions, qvalues, danger_state, sum(rewards)
     
     
     
