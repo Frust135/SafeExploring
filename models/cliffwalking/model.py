@@ -1,7 +1,7 @@
 import numpy as np
 
 class SarsaModel():
-    def __init__(self, col_len, row_len, range_danger, n_states, n_actions, initial_state, goal_state):
+    def __init__(self, col_len, row_len, range_danger, n_states, n_actions, initial_state, goal_state, controlled_Q=None):
         self.environment = Environment(col_len, row_len)
 
         self.col_len = col_len
@@ -18,10 +18,13 @@ class SarsaModel():
 
         self.initial_state = initial_state
         self.goal_state = goal_state
+        
+        if controlled_Q is None: self.controlled_Q = np.empty((0, 0))
+        else: self.controlled_Q = controlled_Q
 
         self.state_policy = self.create_state_policy()
         self.Q = self.initialize_policy()
-        self.modify_policy_by_state()
+        self.modify_policy_by_state()        
     
     def initialize_policy(self):
         """
@@ -31,6 +34,9 @@ class SarsaModel():
         """
         p=(1/self.n_actions)
         policy = np.ones((self.n_states,self.n_actions))*p
+        if self.controlled_Q.any():
+            len_controlled_Q = len(self.controlled_Q)
+            policy[:len_controlled_Q, :] = self.controlled_Q
         return policy
     
     def create_state_policy(self):
@@ -69,7 +75,7 @@ class SarsaModel():
                     self.Q[row_index][col_index] = 0
                     row_aux = self.Q[row_index]
                     row_aux[row_aux!=0] = 1/len(row_aux[row_aux!=0])
-                    self.Q[row_index] = row_aux
+                    self.Q[row_index] = row_aux        
         return True
     
     def get_prob_actions(self, state):
@@ -124,10 +130,39 @@ class SarsaModel():
             next_action = self.get_action(next_state, episode)
             self.Q[state-1, action] = self.Q[state-1, action] + self.alpha * (reward + self.gamma * self.Q[next_state-1, next_action] - self.Q[state-1, action])
             action = next_action
-            state = next_state            
+            state = next_state
             if finished: break
             rewards.append(reward)
         return rewards, actions
+    
+    def run_csv(self, episode):
+        rewards = []
+        actions = []
+        states = []
+        qvalues = []
+        danger_state = []
+        
+        state = self.initial_state
+        action = self.get_action(state, episode)
+        for i in range(20):            
+            reward, next_state, finished = self.update(state, action)
+            next_action = self.get_action(next_state, episode)
+            self.Q[state-1, action] = self.Q[state-1, action] + self.alpha * (reward + self.gamma * self.Q[next_state-1, next_action] - self.Q[state-1, action])
+            
+            states.append(state)
+            actions.append(action)
+            qvalues.append(self.Q[state-1, action])
+            if reward == -100:
+                danger_state.append('danger')
+            else:
+                danger_state.append('safe')
+
+            action = next_action
+            state = next_state            
+            
+            if finished: break
+
+        return states, actions, qvalues, danger_state, finished
     
     
     
