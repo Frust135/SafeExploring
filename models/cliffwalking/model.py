@@ -2,7 +2,7 @@ import numpy as np
 
 
 class SarsaModel():
-    def __init__(self, col_len, row_len, range_danger, n_states, n_actions, initial_state, goal_state, controlled_Q=None):
+    def __init__(self, col_len, row_len, range_danger, n_states, n_actions, initial_state, goal_state):
         self.environment = Environment(col_len, row_len)
 
         self.col_len = col_len
@@ -20,11 +20,6 @@ class SarsaModel():
         self.initial_state = initial_state
         self.goal_state = goal_state
 
-        if controlled_Q is None:
-            self.controlled_Q = np.empty((0, 0))
-        else:
-            self.controlled_Q = controlled_Q
-
         self.state_policy = self.create_state_policy()
         self.Q = self.initialize_policy()
         self.modify_policy_by_state()
@@ -37,9 +32,6 @@ class SarsaModel():
         """
         p = (1/self.n_actions)
         policy = np.ones((self.n_states, self.n_actions))*p
-        if self.controlled_Q.any():
-            len_controlled_Q = len(self.controlled_Q)
-            policy[:len_controlled_Q, :] = self.controlled_Q
         return policy
 
     def create_state_policy(self):
@@ -101,7 +93,9 @@ class SarsaModel():
         de la tabla Q
         '''
         actions = self.get_qvalue_actions(state)
-        if np.random.rand() < (self.epsilon * (1.0 / (episode + 0.4))):
+        new_epsilon = self.epsilon * 1 / ((episode * 0.1) + 1)
+        if new_epsilon < 0.01: new_epsilon = 0.01
+        if np.random.rand() < new_epsilon:
             valid_actions = np.where(actions != 0)[0]
             action = np.random.choice(valid_actions)
         else:

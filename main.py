@@ -11,8 +11,11 @@ def cliff_option():
 
 
 def luna_lander_option():
-    from environment.luna_lander.create_environment import luna_lander_normal
-    luna_lander_normal()
+    from environment.luna_lander.create_environment import luna_lander_normal, luna_lander_controlled
+    if luna_lander_checkbokx.get() == False:
+        luna_lander_normal()
+    else:
+        luna_lander_controlled()    
     return True
 
 
@@ -23,6 +26,7 @@ if __name__ == "__main__":
     root.geometry("500x300")
 
     cliff_checkbox = tk.BooleanVar()
+    luna_lander_checkbokx = tk.BooleanVar()
 
     # crear un marco para las opciones
     options_frame = tk.Frame(root)
@@ -39,7 +43,7 @@ if __name__ == "__main__":
     luna_lander_button = tk.Button(
         options_frame, text="Seleccionar", command=luna_lander_option)
     luna_lander_controlled_checkbox = tk.Checkbutton(
-        options_frame, text="Controlado")
+        options_frame, text="Controlado", variable=luna_lander_checkbokx)
 
     # colocar las etiquetas y botones en el marco
     cliff_option_label.grid(row=0, column=0, padx=10, pady=50)

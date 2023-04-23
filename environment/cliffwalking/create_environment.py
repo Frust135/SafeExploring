@@ -1,4 +1,4 @@
-def cliff_walking_normal(controlled_Q=None):
+def cliff_walking_normal():
     """
     Crea el entorno de CliffWalking con el agente en la posición (0, 3), y una meta en la posición (11, 3),
     y estados peligrosos desde la posición (1, 3) hasta la (10, 3)
@@ -23,7 +23,7 @@ def cliff_walking_normal(controlled_Q=None):
     row_environment = 4
     range_danger = [38, 39, 40, 41, 42, 43, 44, 45, 46, 47]
     model_sarsa = model.SarsaModel(col_environment, row_environment, range_danger,
-                                   n_states, n_actions, initial_state, goal_state, controlled_Q)
+                                   n_states, n_actions, initial_state, goal_state)
 
     states_array = []
     actions_array = []
@@ -124,5 +124,5 @@ def cliff_walking_controlled():
     from utils import csv
     csv.create_csv(col, states_array, actions_array,
                    qvalues_array, danger_state_array)
-    # cliff_walking_normal(model_sarsa_controlled.Q)
+    # cliff_walking_normal()
     return True
