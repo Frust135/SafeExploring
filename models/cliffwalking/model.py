@@ -102,8 +102,6 @@ class SarsaModel():
                     actions[action] = np.min(actions) - 1
                 else:
                     break
-        # prob_actions = self.get_prob_actions(state)
-        # q_values_list = prob_actions + np.random.randn(1, self.n_actions) * (1.0 / (episode + 1))        
         return action
 
     def update(self, current_state, action):
