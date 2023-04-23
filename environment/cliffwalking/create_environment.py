@@ -24,11 +24,12 @@ def cliff_walking_normal(controlled_Q=None):
     range_danger = [38, 39, 40, 41, 42, 43, 44, 45, 46, 47]
     model_sarsa = model.SarsaModel(col_environment, row_environment, range_danger,  n_states, n_actions, initial_state, goal_state, controlled_Q)
 
-    # states_array = []
-    # actions_array = []
-    # qvalues_array = []
-    # finished_count = 0
-    # danger_state_array = []
+    states_array = []
+    actions_array = []
+    qvalues_array = []
+    finished_count = 0
+    danger_state_array = []
+
     for episode in range(100):
         actions = []
         env = CliffwalkingEnviorment(
@@ -38,7 +39,7 @@ def cliff_walking_normal(controlled_Q=None):
             red_flags=red_flags,
             green_flags=green_flags,            
         )
-        rewards, actions = model_sarsa.run(episode)
+        rewards, actions = model_sarsa.run(episode+1)
         env.run(actions)
         text = 'Episodio: {0} - Recompensa acumulada: {1}'.format(episode, sum(rewards))
         print(text)
@@ -94,20 +95,20 @@ def cliff_walking_controlled():
             red_flags=red_flags,
             green_flags=green_flags,
         )
-        # rewards, actions = model_sarsa_controlled.run(episode)
-        # env.run(actions)
-        # text = 'Episodio: {0} - Recompensa acumulada: {1}'.format(episode, sum(rewards))
-        # print(text)
-        states, actions, qvalues, danger_state, rewards = model_sarsa_controlled.run_csv(episode)
-        states_array.extend(states)
-        actions_array.extend(actions)
-        qvalues_array.extend(qvalues)
-        danger_state_array.extend(danger_state)
-        print(rewards)
-        if rewards == -6: finished_count += 1
-        if finished_count == 5: break
-    col = ['Estado', 'Acción', 'Q-Value', 'Estado Peligroso']
-    from utils import csv
-    csv.create_csv(col, states_array, actions_array, qvalues_array, danger_state_array)
+        rewards, actions = model_sarsa_controlled.run(episode+1)
+        env.run(actions)
+        text = 'Episodio: {0} - Recompensa acumulada: {1}'.format(episode, sum(rewards))
+        print(text)
+    #     states, actions, qvalues, danger_state, rewards = model_sarsa_controlled.run_csv(episode)
+    #     states_array.extend(states)
+    #     actions_array.extend(actions)
+    #     qvalues_array.extend(qvalues)
+    #     danger_state_array.extend(danger_state)
+    #     print(rewards)
+    #     if rewards == -6: finished_count += 1
+    #     if finished_count == 5: break
+    # col = ['Estado', 'Acción', 'Q-Value', 'Estado Peligroso']
+    # from utils import csv
+    # csv.create_csv(col, states_array, actions_array, qvalues_array, danger_state_array)
     # cliff_walking_normal(model_sarsa_controlled.Q)
     return True

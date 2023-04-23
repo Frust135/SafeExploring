@@ -78,11 +78,12 @@ class SarsaModel():
                     self.Q[row_index] = row_aux        
         return True
     
-    def get_prob_actions(self, state):
+    def get_qvalue_actions(self, state):
         '''
         Retorna las probabilidades de cada acción
         '''
-        current_state_row = self.Q[state-1,]                
+        from copy import copy
+        current_state_row = copy(self.Q[state-1,])
         return current_state_row
 
     def get_action(self, state, episode):
@@ -90,14 +91,19 @@ class SarsaModel():
         Obtiene una acción en función del estado actual e iteración del agente, esta acción se obtiene
         de la tabla Q
         '''
-        prob_actions = self.get_prob_actions(state)
-        q_values_list = prob_actions + np.random.randn(1, self.n_actions) * (1.0 / (episode + 1))
-        while True:
-            action = np.argmax(q_values_list)
-            if prob_actions[action] == 0:
-                q_values_list[0][action] = np.min(q_values_list[0]) - 1
-            else:
-                break 
+        actions = self.get_qvalue_actions(state)
+        if np.random.rand() < (self.epsilon * (1.0 / episode + 0.4)):
+            valid_actions = np.where(actions != 0)[0]
+            action = np.random.choice(valid_actions)
+        else:
+            while True:
+                action = np.argmax(actions)
+                if actions[action] == 0:
+                    actions[action] = np.min(actions) - 1
+                else:
+                    break
+        # prob_actions = self.get_prob_actions(state)
+        # q_values_list = prob_actions + np.random.randn(1, self.n_actions) * (1.0 / (episode + 1))        
         return action
 
     def update(self, current_state, action):
