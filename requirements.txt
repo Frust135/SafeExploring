@@ -2,5 +2,4 @@ pygame==2.2.0
 tk==0.1.0
 atari-py==0.2.9
 gym==0.26.2
-"gym[accept-rom-license]"
-"gym[atari]"
+gymnasium[atari, all]

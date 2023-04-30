@@ -24,7 +24,4 @@ def create_graph(data_with_mlp, data_without_mlp, data_danger_with_mlp, data_dan
     ax2.set_ylabel('Estado Peligroso')
     ax2.legend()
 
-    # plt.figure(figsize=(10, 6))
-    # plt.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.1)
-    # plt.legend()
     plt.show()

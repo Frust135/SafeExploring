@@ -1,14 +1,16 @@
 import numpy as np
 
-
 class SarsaModel():
-    def __init__(self, n_states, n_actions):        
+    def __init__(self, n_actions, n_states):        
         self.n_states = n_states
         self.n_actions = n_actions
 
         self.alpha = 0.1
         self.gamma = 0.99
-        self.epsilon = 1
+        
+        self.epsilon_final = 0.1
+        self.epsilon_inicial = 1
+        self.decay_rate = 0.99
 
         self.Q = self.initialize_policy()
 
@@ -16,15 +18,14 @@ class SarsaModel():
         """
         Inicializa la política del agente
         """
-        p = (1/self.n_actions)
-        policy = np.ones((self.n_states, self.n_actions))*p
+        policy = np.zeros((self.n_states, self.n_actions))
         return policy
 
-    def convert_state(self, observation):
-        """
-        Convierte el estado del agente en un entero
-        """
-        return observation
+    def discretize_state(self, state):
+        import hashlib
+        arr_bytes = bytearray(state)
+        hash = hashlib.sha1(arr_bytes).hexdigest()
+        return int(hash[:5], 16)
     
 
     def get_action(self, state, episode, env):
@@ -32,14 +33,11 @@ class SarsaModel():
         Obtiene una acción en función del estado actual e iteración del agente, esta acción se obtiene
         de la tabla Q
         '''
-        new_epsilon = self.epsilon * 1 / ((episode * 0.1) + 1)
-        if new_epsilon < 0.1:
-            new_epsilon = 0.1
-        if np.random.rand() < new_epsilon:
+        epsilon = max(self.epsilon_final, self.epsilon_inicial * self.decay_rate**episode)
+        if np.random.rand() < epsilon:
             action = env.action_space.sample()
         else:
-            action = env.action_space.sample()
-            #return np.argmax(self.Q[state])
+            return np.argmax(self.Q[state])
         return action
 
     def update(self, current_state, action, reward, next_state, next_action):

@@ -5,9 +5,6 @@ from sklearn.neural_network import MLPRegressor
 class MLP():
     def __init__(self):
         self.model = None
-    
-    # def get_percentage(self, number, pct):
-    #     return int(number * pct / 100)
 
     def parse_data_train(self, data):
         '''
