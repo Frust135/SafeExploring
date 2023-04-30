@@ -97,11 +97,13 @@ class SarsaModel():
         if new_epsilon < 0.1:
             new_epsilon = 0.1
         if np.random.rand() < new_epsilon:
+            # if past_action:
+            #     actions[past_action] = 0
             valid_actions = np.where(actions != 0)[0]
             action = np.random.choice(valid_actions)
         else:
             while True:
-                action = np.argmax(actions)
+                action = np.argmax(actions)                
                 if actions[action] == 0 or action == past_action:
                     actions[action] = np.min(actions) - 1
                 else:
