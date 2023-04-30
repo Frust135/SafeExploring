@@ -87,25 +87,30 @@ class SarsaModel():
         current_state_row = copy(self.Q[state-1,])
         return current_state_row
 
-    def get_action(self, state, episode):
+    def get_action(self, state, episode, past_action=None):
         '''
         Obtiene una acción en función del estado actual e iteración del agente, esta acción se obtiene
         de la tabla Q
         '''
         actions = self.get_qvalue_actions(state)
         new_epsilon = self.epsilon * 1 / ((episode * 0.1) + 1)
-        if new_epsilon < 0.01: new_epsilon = 0.01
+        if new_epsilon < 0.1:
+            new_epsilon = 0.1
         if np.random.rand() < new_epsilon:
             valid_actions = np.where(actions != 0)[0]
             action = np.random.choice(valid_actions)
         else:
             while True:
                 action = np.argmax(actions)
-                if actions[action] == 0:
+                if actions[action] == 0 or action == past_action:
                     actions[action] = np.min(actions) - 1
                 else:
                     break
         return action
+    
+    def get_location(self, state):
+        index = np.where(self.environment.matrix == state)
+        return index[1][0], index[0][0]
 
     def update(self, current_state, action):
         '''
@@ -126,35 +131,39 @@ class SarsaModel():
             reward = -1
         return reward, next_state, finished
 
-    def run(self, episode):
-        rewards = []
-        actions = []
-        state = self.initial_state
-        action = self.get_action(state, episode)
-        for i in range(150):
-            actions.append(action)
-            reward, next_state, finished = self.update(state, action)
-            next_action = self.get_action(next_state, episode)
-            self.Q[state-1, action] = self.Q[state-1, action] + self.alpha * \
-                (reward + self.gamma *
-                 self.Q[next_state-1, next_action] - self.Q[state-1, action])
-            action = next_action
-            state = next_state
-            if finished:
-                break
-            rewards.append(reward)
-        return rewards, actions
+    def run_not_controlled(self, action, state, episode, mlp=None):
+        prediction = 0
+        if mlp:
+            x_location, y_location = self.get_location(state)
+            data = {
+                'states': state,
+                'actions': action,
+                'x_locations': x_location,
+                'y_locations': y_location,
+            }
+            prediction = mlp.predict_data(data)                
+        if prediction == 1:
+            another_action = self.get_action(state, episode, action)
+            action = another_action
+        reward, next_state, finished = self.update(state, action)
+        next_action = self.get_action(next_state, episode)
+        self.Q[state-1, action] = self.Q[state-1, action] + self.alpha * \
+            (reward + self.gamma *
+                self.Q[next_state-1, next_action] - self.Q[state-1, action])
+        return action, next_state, next_action, reward, finished
 
-    def run_csv(self, episode):
+    def run_controlled(self, episode):
         rewards = []
         actions = []
         states = []
-        qvalues = []
+        x_locations = []
+        y_locations = []
         danger_state = []
 
         state = self.initial_state
         action = self.get_action(state, episode)
         for i in range(150):
+            x_location, y_location = self.get_location(state)
             reward, next_state, finished = self.update(state, action)
             next_action = self.get_action(next_state, episode)
             self.Q[state-1, action] = self.Q[state-1, action] + self.alpha * \
@@ -163,20 +172,17 @@ class SarsaModel():
 
             states.append(state)
             actions.append(action)
-            qvalues.append(self.Q[state-1, action])
-            if reward == -100:
-                danger_state.append('danger')
-            else:
-                danger_state.append('safe')
-
+            x_locations.append(x_location)
+            y_locations.append(y_location)
+            rewards.append(reward)
+            if reward == -100: danger_state.append(1)
+            else: danger_state.append(0)
             action = next_action
-            state = next_state
-
+            state = next_state            
             if finished:
                 break
-            rewards.append(reward)
 
-        return states, actions, qvalues, danger_state, sum(rewards)
+        return states, actions, rewards, danger_state, x_locations, y_locations
 
 
 class Environment():
