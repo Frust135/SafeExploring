@@ -15,7 +15,11 @@ class SarsaModel():
 
         self.alpha = 0.1
         self.gamma = 0.99
-        self.epsilon = 1
+        
+        self.epsilon_final = 0.1
+        self.epsilon_inicial = 1
+        self.decay_rate = 0.99
+        
 
         self.initial_state = initial_state
         self.goal_state = goal_state
@@ -93,10 +97,8 @@ class SarsaModel():
         de la tabla Q
         '''
         actions = self.get_qvalue_actions(state)
-        new_epsilon = self.epsilon * 1 / ((episode * 0.1) + 1)
-        if new_epsilon < 0.1:
-            new_epsilon = 0.1
-        if np.random.rand() < new_epsilon:
+        epsilon = max(self.epsilon_final, self.epsilon_inicial * self.decay_rate**episode)
+        if np.random.rand() < epsilon:
             # if past_action:
             #     actions[past_action] = 0
             valid_actions = np.where(actions != 0)[0]
