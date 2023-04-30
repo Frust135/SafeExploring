@@ -125,7 +125,7 @@ class SarsaModel():
         # Meta
         if next_state == self.goal_state:
             finished = True
-            reward = 100
+            reward = 0
         # Acantilado
         elif next_state in self.range_danger:
             reward = -100

@@ -21,7 +21,7 @@ def create_graph(data_with_mlp, data_without_mlp, data_danger_with_mlp, data_dan
     ax2.plot(x_danger, y_danger, color='green', label='sin MLP')
     ax2.set_title('Relación entre Episodio y Estado peligroso')
     ax2.set_xlabel('Episodio')
-    ax2.set_ylabel('Recompensa')
+    ax2.set_ylabel('Estado Peligroso')
     ax2.legend()
 
     # plt.figure(figsize=(10, 6))
