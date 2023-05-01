@@ -10,12 +10,12 @@ def cliff_option():
     return True
 
 
-def luna_lander_option():
-    from environment.luna_lander.create_environment import luna_lander_normal, luna_lander_controlled
-    if luna_lander_checkbokx.get() == False:
-        luna_lander_normal()
+def cart_pole_option():
+    from environment.cart_pole.create_environment import cart_pole_normal, cart_pole_controlled
+    if cart_pole_checkbox.get() == False:
+        cart_pole_normal()
     else:
-        luna_lander_controlled()    
+        cart_pole_controlled()    
     return True
 
 
@@ -26,7 +26,7 @@ if __name__ == "__main__":
     root.geometry("500x300")
 
     cliff_checkbox = tk.BooleanVar()
-    luna_lander_checkbokx = tk.BooleanVar()
+    cart_pole_checkbox = tk.BooleanVar()
 
     # crear un marco para las opciones
     options_frame = tk.Frame(root)
@@ -39,19 +39,19 @@ if __name__ == "__main__":
     cliff_controlled_checkbox = tk.Checkbutton(
         options_frame, text="Controlado", variable=cliff_checkbox)
 
-    luna_lander_label = tk.Label(options_frame, text="Luna Lander")
-    luna_lander_button = tk.Button(
-        options_frame, text="Seleccionar", command=luna_lander_option)
-    luna_lander_controlled_checkbox = tk.Checkbutton(
-        options_frame, text="Controlado", variable=luna_lander_checkbokx)
+    cart_pole_label = tk.Label(options_frame, text="Cart Pole")
+    cart_pole_button = tk.Button(
+        options_frame, text="Seleccionar", command=cart_pole_option)
+    cart_pole_controlled_checkbox = tk.Checkbutton(
+        options_frame, text="Controlado", variable=cart_pole_checkbox)
 
     # colocar las etiquetas y botones en el marco
     cliff_option_label.grid(row=0, column=0, padx=10, pady=50)
     cliff_option_button.grid(row=0, column=1, padx=10, pady=50)
     cliff_controlled_checkbox.grid(row=0, column=2, padx=10, pady=50)
-    luna_lander_label.grid(row=2, column=0, padx=10, pady=50)
-    luna_lander_button.grid(row=2, column=1, padx=10, pady=50)
-    luna_lander_controlled_checkbox.grid(row=2, column=2, padx=10, pady=50)
+    cart_pole_label.grid(row=2, column=0, padx=10, pady=50)
+    cart_pole_button.grid(row=2, column=1, padx=10, pady=50)
+    cart_pole_controlled_checkbox.grid(row=2, column=2, padx=10, pady=50)
 
     # iniciar el bucle principal de la ventana
     root.mainloop()
