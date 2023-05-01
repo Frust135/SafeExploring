@@ -12,8 +12,9 @@ class MLP():
         Convertir a una matriz de NumPy, estas variables son ingresadas como entradas a la red.
         Contiene los datos de entrada, las que se usaran para predecir
         '''
-        X = np.stack([data['states'], data['actions'],
-                     data['x_locations'], data['y_locations']])
+        cartX, cartXdot, cartTheta, cartThetadot = zip(*data['states'])
+        # print(data['states'].shape)
+        X = np.stack([np.array(cartX), np.array(cartXdot), np.array(cartTheta), np.array(cartThetadot), np.array(data['actions'])])
         X = X.transpose()
         Y = data['danger_state']
         X, Y = shuffle(X, Y, random_state=0)
@@ -24,8 +25,8 @@ class MLP():
         Nc = (Nw - Ns) / (Ne + Ns + 1)
         return int(Nc)
 
-    def train(self, data):
-        hidden_layers = self.get_number_of_neurons(len(data['states']), 4, 1)
+    def train(self, data):        
+        hidden_layers = self.get_number_of_neurons(len(data['states']), 5, 1)
         regr = MLPRegressor(hidden_layer_sizes=hidden_layers, activation='logistic',
                             random_state=None, max_iter=5000, learning_rate_init=0.01)
 
@@ -35,9 +36,8 @@ class MLP():
         return True
 
     def predict_data(self, data):
-        X = np.stack([data['states'], data['actions'],
-                     data['x_locations'], data['y_locations']])
-        # X = X.transpose()
+        cartX, cartXdot, cartTheta, cartThetadot = zip(data['states'])
+        X = np.stack([cartX[0], cartXdot[0], cartTheta[0], cartThetadot[0], data['actions']])
         Y_pred = self.model.predict([X])
         if Y_pred < 0.5:
             Y_pred = 0

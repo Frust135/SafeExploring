@@ -38,11 +38,13 @@ class SarsaModel():
         cartXdot = int(np.digitize(cartXdot, self.cartVelSpace))
         cartTheta = int(np.digitize(cartTheta, self.poleThetaSpace))
         cartThetadot = int(np.digitize(cartThetadot, self.poleThetaVelSpace))
-
-        return (cartX, cartXdot, cartTheta, cartThetadot)
+        danger_state = 0
+        if cartTheta not in [3, 4, 5, 6, 7]:
+            danger_state = 1
+        return (cartX, cartXdot, cartTheta, cartThetadot), danger_state
     
 
-    def get_action(self, state, episode, env):
+    def get_action(self, state, episode, env, mlp=None):
         '''
         Obtiene una acción en función del estado actual e iteración del agente, esta acción se obtiene
         de la tabla Q
@@ -53,6 +55,11 @@ class SarsaModel():
         else:
             values = np.array([self.Q[state,a] for a in range(2)])
             action = np.argmax(values)
+            if mlp:
+                prediction = mlp.predict_data({'states': state, 'actions': action})
+                if prediction == 1:
+                    if action == 1: action = 0
+                    else: action = 1
         return action
 
     def update(self, current_state, action, reward, next_state, next_action):

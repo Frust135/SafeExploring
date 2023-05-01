@@ -15,11 +15,10 @@ class SarsaModel():
 
         self.alpha = 0.1
         self.gamma = 0.99
-        
+
         self.epsilon_final = 0.1
         self.epsilon_inicial = 1
         self.decay_rate = 0.99
-        
 
         self.initial_state = initial_state
         self.goal_state = goal_state
@@ -97,7 +96,8 @@ class SarsaModel():
         de la tabla Q
         '''
         actions = self.get_qvalue_actions(state)
-        epsilon = max(self.epsilon_final, self.epsilon_inicial * self.decay_rate**episode)
+        epsilon = max(self.epsilon_final, self.epsilon_inicial *
+                      self.decay_rate**episode)
         if np.random.rand() < epsilon:
             # if past_action:
             #     actions[past_action] = 0
@@ -105,13 +105,13 @@ class SarsaModel():
             action = np.random.choice(valid_actions)
         else:
             while True:
-                action = np.argmax(actions)                
+                action = np.argmax(actions)
                 if actions[action] == 0 or action == past_action:
                     actions[action] = np.min(actions) - 1
                 else:
                     break
         return action
-    
+
     def get_location(self, state):
         index = np.where(self.environment.matrix == state)
         return index[1][0], index[0][0]
@@ -145,7 +145,7 @@ class SarsaModel():
                 'x_locations': x_location,
                 'y_locations': y_location,
             }
-            prediction = mlp.predict_data(data)                
+            prediction = mlp.predict_data(data)
         if prediction == 1:
             another_action = self.get_action(state, episode, action)
             action = another_action
@@ -179,10 +179,12 @@ class SarsaModel():
             x_locations.append(x_location)
             y_locations.append(y_location)
             rewards.append(reward)
-            if reward == -100: danger_state.append(1)
-            else: danger_state.append(0)
+            if reward == -100:
+                danger_state.append(1)
+            else:
+                danger_state.append(0)
             action = next_action
-            state = next_state            
+            state = next_state
             if finished:
                 break
 
