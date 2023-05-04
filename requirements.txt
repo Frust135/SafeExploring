@@ -2,4 +2,7 @@ pygame==2.2.0
 tk==0.1.0
 atari-py==0.2.9
 gym==0.26.2
+scikit-learn==0.24.2
+matplotlib==3.4.2
 gymnasium[atari, all]
+
