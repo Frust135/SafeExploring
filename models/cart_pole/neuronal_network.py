@@ -14,7 +14,7 @@ class MLP():
         '''
         cartX, cartXdot, cartTheta, cartThetadot = zip(*data['states'])
         # print(data['states'].shape)
-        X = np.stack([np.array(cartX), np.array(cartXdot), np.array(cartTheta), np.array(cartThetadot), np.array(data['actions'])])
+        X = np.stack([cartTheta, data['actions']])
         X = X.transpose()
         Y = data['danger_state']
         X, Y = shuffle(X, Y, random_state=0)
@@ -26,7 +26,7 @@ class MLP():
         return int(Nc)
 
     def train(self, data):        
-        hidden_layers = self.get_number_of_neurons(len(data['states']), 5, 1)
+        hidden_layers = self.get_number_of_neurons(len(data['states']), 2, 1)
         regr = MLPRegressor(hidden_layer_sizes=hidden_layers, activation='logistic',
                             random_state=None, max_iter=5000, learning_rate_init=0.01)
 
@@ -37,7 +37,7 @@ class MLP():
 
     def predict_data(self, data):
         cartX, cartXdot, cartTheta, cartThetadot = zip(data['states'])
-        X = np.stack([cartX[0], cartXdot[0], cartTheta[0], cartThetadot[0], data['actions']])
+        X = np.stack([cartTheta[0], data['actions']])
         Y_pred = self.model.predict([X])
         if Y_pred < 0.5:
             Y_pred = 0

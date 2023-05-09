@@ -16,9 +16,9 @@ class SarsaModel():
         self.alpha = 0.1
         self.gamma = 0.99
 
-        self.epsilon_final = 0.1
+        self.epsilon_final = 0.01
         self.epsilon_inicial = 1
-        self.decay_rate = 0.99
+        self.decay_rate = 0.995
 
         self.initial_state = initial_state
         self.goal_state = goal_state

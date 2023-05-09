@@ -27,7 +27,7 @@ def cliff_walking_normal(mlp=None):
     data_graph_reward = []
     data_graph_danger_state = []
 
-    for episode in range(150):
+    for episode in range(250):
         aux_reward = 0
         aux_danger_state = 0
         # env = CliffwalkingEnviorment(
@@ -41,7 +41,7 @@ def cliff_walking_normal(mlp=None):
         actions = []
         state = model_sarsa.initial_state
         action = model_sarsa.get_action(state, episode)
-        for i in range(200):
+        for i in range(100):
             action, next_state, next_action, reward, finished = model_sarsa.run_not_controlled(
                 action, state, episode, mlp)
             actions.append(action)
