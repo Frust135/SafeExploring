@@ -1,5 +1,6 @@
 import numpy as np
 import gymnasium as gym
+import time
 
 
 def cart_pole_normal(mlp=None):
@@ -10,20 +11,22 @@ def cart_pole_normal(mlp=None):
     model_sarsa = SarsaModel()
     data_graph_reward = []
     data_graph_danger = []
-    for episode in range(500):
+    for episode in range(500):        
+        # if mlp and episode > 450:
+        #     env = gym.make("CartPole-v1", render_mode='human')
         observation = env.reset()
-        state, danger_state = model_sarsa.discretize_state(observation[0])
+        state, danger_state, pole_theta = model_sarsa.discretize_state(observation[0])
         action = model_sarsa.get_action(state, 0, env, mlp)
         rewards = 0
         danger_states = 0
-        for i in range(100):
+        for i in range(50):
             raw_state, reward, terminated, truncated, info = env.step(action)
             if terminated:
-                reward = 10
+                reward = 1
             else:
                 reward = -1
             next_action = model_sarsa.get_action(state, episode, env, mlp)
-            next_state, danger_state = model_sarsa.discretize_state(raw_state)
+            next_state, danger_state, pole_theta = model_sarsa.discretize_state(raw_state)
 
             model_sarsa.update(state, action, reward, next_state, next_action)
             state = next_state
@@ -43,23 +46,25 @@ def cart_pole_controlled():
     from models.cart_pole.neuronal_network import MLP
     from utils.create_graph import create_graph
     env = gym.make("CartPole-v1", render_mode='rgb_array')
-    model_sarsa = SarsaModel()
+    model_sarsa = SarsaModel(controlled=True)
     states_array = []
     actions_array = []
     # x_locations_array = []
     # y_locations_array = []
     danger_state_array = []
     for episode in range(500):
-        state, danger_state = model_sarsa.discretize_state(env.reset()[0])
+        state, danger_state, pole_theta = model_sarsa.discretize_state(env.reset()[0])
         action = model_sarsa.get_action(state, 0, env)
-        for i in range(100):
+        for i in range(50):
             raw_state, reward, terminated, truncated, info = env.step(action)
-            if terminated:
-                reward = 10
+            if pole_theta > -20 and pole_theta < 20:
+                reward = 1
+            elif pole_theta < -40 or pole_theta > 40:
+                reward = -100
             else:
                 reward = -1
             next_action = model_sarsa.get_action(state, episode, env)
-            next_state, danger_state = model_sarsa.discretize_state(raw_state)
+            next_state, danger_state, pole_theta = model_sarsa.discretize_state(raw_state)
 
             model_sarsa.update(state, action, reward, next_state, next_action)
             states_array.append(state)
@@ -68,6 +73,7 @@ def cart_pole_controlled():
 
             state = next_state
             action = next_action
+            if reward == -100: break
             # if terminated: break
     data = {
         'states': states_array,
