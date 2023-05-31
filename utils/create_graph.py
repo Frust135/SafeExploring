@@ -1,5 +1,6 @@
 def create_graph(data_with_mlp, data_without_mlp, data_danger_with_mlp, data_danger_without_mlp):
     import matplotlib.pyplot as plt
+    import numpy as np
     x_mlp_reward, y_mlp_reward = zip(*data_with_mlp)
     x_reward, y_reward = zip(*data_without_mlp)
 
@@ -9,7 +10,7 @@ def create_graph(data_with_mlp, data_without_mlp, data_danger_with_mlp, data_dan
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
 
     # Gráfico 1
-    ax1.plot(x_mlp_reward, y_mlp_reward, color='blue', label='con MLP')
+    ax1.plot(x_mlp_reward, y_mlp_reward, color='blue', label='con MLP')    
     ax1.plot(x_reward, y_reward, color='green', label='sin MLP')
     ax1.set_title('Relación entre Episodio y Recompensa')
     ax1.set_xlabel('Episodio')

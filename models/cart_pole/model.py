@@ -10,11 +10,11 @@ class SarsaModel():
         
         self.epsilon_final = 0.001
         self.epsilon_inicial = 1
-        self.decay_rate = 0.99
+        self.decay_rate = 0.995
 
-        self.cart_position = np.linspace(-4.8, 4.8, 1)
-        self.cart_velocity = np.linspace(-4, 4, 1)
-        self.pole_angle = np.linspace(0, 180, 10)
+        self.cart_position = np.linspace(-4.8, 4.8, 0)
+        self.cart_velocity = np.linspace(-4, 4, 0)
+        self.pole_angle = np.linspace(0, 360, 90)
         self.pole_angular_velocity = np.linspace(-4, 4, 8)
 
         self.Q = self.initialize_policy()
@@ -28,7 +28,7 @@ class SarsaModel():
             for j in range(len(self.cart_velocity)+1):
                 for k in range(len(self.pole_angle)+1):
                     for l in range(len(self.pole_angular_velocity)+1):
-                        states.append((i,j,k,l))
+                        states.append((i,j,k,l))  
         policy = {}
         for s in states:
             for a in range(2):
@@ -36,22 +36,26 @@ class SarsaModel():
         return policy
     
     def convert_degrees(self, value):
-        degree_val = abs(math.degrees(value))
-        if degree_val > 180:
-            diff = degree_val - 180
-            degree_val = 180 - diff
-        return degree_val
-
+        degree_val = math.degrees(value)
+        dif_mult = 0
+        if degree_val > 360:
+            dif_mult = abs(degree_val // 360)
+            degree_val = degree_val - (360 * dif_mult)
+        elif degree_val < 0:
+            if degree_val < -360: dif_mult = abs(degree_val // 360)-1
+            degree_val = 360 - abs((abs(degree_val) - (360 * dif_mult)))
+        return int(degree_val)
+    
     def discretize_state(self, observation):
-        cartX, cartXdot, cartTheta, cartThetadot = observation        
+        cartX, cartXdot, cartTheta, cartThetadot = observation
         cartTheta = self.convert_degrees(cartTheta)
         cartX_state = int(np.digitize(cartX, self.cart_position))
         cartXdot_state = int(np.digitize(cartXdot, self.cart_velocity))
         cartTheta_state = int(np.digitize(cartTheta, self.pole_angle))
         cartThetadot_state = int(np.digitize(cartThetadot, self.pole_angular_velocity))
-        danger_state = 0        
-        if cartTheta < -20 or cartTheta > 20:
-            danger_state = 1
+        danger_state = 1
+        if (cartTheta > 340 or cartTheta < 20):# and cartThetadot_state > 3 and cartThetadot_state < 5:
+            danger_state = 0
         return (cartX_state, cartXdot_state, cartTheta_state, cartThetadot_state), danger_state, cartTheta
     
 
@@ -64,9 +68,8 @@ class SarsaModel():
         if np.random.rand() < epsilon:
             action = env.action_space.sample()
         else:
-            values = np.array([self.Q[state,a] for a in range(2)])
+            values = np.array([self.Q[state,a] for a in range(2)])            
             action = np.argmax(values)
-            
             if mlp:
                 prediction = mlp.predict_data({'states': state, 'actions': action})
                 if prediction == 1:
