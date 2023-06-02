@@ -13,8 +13,10 @@ class MLP():
         Contiene los datos de entrada, las que se usaran para predecir
         '''
         cartX, cartXdot, cartTheta, cartThetadot = zip(*data['states'])
-        # print(data['states'].shape)
-        X = np.stack([cartTheta, data['actions']])
+        X = np.stack([
+            data['pole_theta'], data['actions']
+            , cartX, cartXdot, cartTheta, cartThetadot
+        ])
         X = X.transpose()
         Y = data['danger_state']
         X, Y = shuffle(X, Y, random_state=0)
@@ -37,7 +39,10 @@ class MLP():
 
     def predict_data(self, data):
         cartX, cartXdot, cartTheta, cartThetadot = zip(data['states'])
-        X = np.stack([cartTheta[0], data['actions']])
+        X = np.stack([
+            data['pole_theta'], data['actions']
+            , cartX[0], cartXdot[0], cartTheta[0], cartThetadot[0]
+        ])
         Y_pred = self.model.predict([X])
         if Y_pred < 0.5:
             Y_pred = 0

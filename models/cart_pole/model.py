@@ -57,9 +57,8 @@ class SarsaModel():
         if (cartTheta > 340 or cartTheta < 20):# and cartThetadot_state > 3 and cartThetadot_state < 5:
             danger_state = 0
         return (cartX_state, cartXdot_state, cartTheta_state, cartThetadot_state), danger_state, cartTheta
-    
 
-    def get_action(self, state, episode, env, mlp=None):
+    def get_action(self, state, episode, env, pole_theta, mlp=None):
         '''
         Obtiene una acción en función del estado actual e iteración del agente, esta acción se obtiene
         de la tabla Q
@@ -71,7 +70,9 @@ class SarsaModel():
             values = np.array([self.Q[state,a] for a in range(2)])            
             action = np.argmax(values)
             if mlp:
-                prediction = mlp.predict_data({'states': state, 'actions': action})
+                prediction = mlp.predict_data({
+                    'states': state, 'actions': action, 'pole_theta': pole_theta
+                })
                 if prediction == 1:
                     if action == 1: action = 0
                     else: action = 1
