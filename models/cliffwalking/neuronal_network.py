@@ -39,6 +39,7 @@ class MLP():
                      data['x_locations'], data['y_locations']])
         # X = X.transpose()
         Y_pred = self.model.predict([X])
+        
         if Y_pred < 0.5:
             Y_pred = 0
         else:

@@ -11,12 +11,16 @@ def cart_pole_normal(mlp=None):
     data_graph_reward = []
     data_graph_danger = []
     for episode in range(500):
+        # if mlp:
+        #     env = gym.make("CartPole-v1", render_mode='human')
         observation = env.reset()
         state, danger_state, pole_theta = model_sarsa.discretize_state(observation[0])
         action = model_sarsa.get_action(state, 1, env, pole_theta, mlp)
         rewards = 0
         danger_states = 0
-        for i in range(100):
+        for i in range(200):
+            # if mlp:
+            #     time.sleep(.2)
             raw_state, reward, terminated, truncated, info = env.step(action)
             next_action = model_sarsa.get_action(state, episode, env, pole_theta, mlp)
             next_state, danger_state, pole_theta = model_sarsa.discretize_state(raw_state)
@@ -26,6 +30,7 @@ def cart_pole_normal(mlp=None):
             action = next_action
             rewards += reward
             danger_states += danger_state
+            # if terminated: break
         data_graph_reward.append((episode, rewards))
         data_graph_danger.append((episode, danger_states))
         print('Episode: {0} - Recompensa: {1} - Estado Peligroso: {2}'.format(episode, rewards, danger_states))
@@ -46,7 +51,8 @@ def cart_pole_controlled():
     for episode in range(500):
         state, danger_state, pole_theta = model_sarsa.discretize_state(env.reset()[0])
         action = model_sarsa.get_action(state, 0, env, pole_theta)
-        for i in range(100):
+        for i in range(200):
+            # time.sleep(.2)
             raw_state, reward, terminated, truncated, info = env.step(action)
             next_action = model_sarsa.get_action(state, episode, env, pole_theta)
             next_state, danger_state, pole_theta = model_sarsa.discretize_state(raw_state)
@@ -59,6 +65,8 @@ def cart_pole_controlled():
 
             state = next_state
             action = next_action
+            # print(pole_theta)
+            if pole_theta < 320 and pole_theta > 40: break
     data = {
         'states': states_array,
         'actions': actions_array,

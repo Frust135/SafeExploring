@@ -8,7 +8,7 @@ class SarsaModel():
         self.alpha = 0.1
         self.gamma = 0.99
         
-        self.epsilon_final = 0.001
+        self.epsilon_final = 0.01
         self.epsilon_inicial = 1
         self.decay_rate = 0.995
 
@@ -53,9 +53,10 @@ class SarsaModel():
         cartXdot_state = int(np.digitize(cartXdot, self.cart_velocity))
         cartTheta_state = int(np.digitize(cartTheta, self.pole_angle))
         cartThetadot_state = int(np.digitize(cartThetadot, self.pole_angular_velocity))
-        danger_state = 1
-        if (cartTheta > 340 or cartTheta < 20):# and cartThetadot_state > 3 and cartThetadot_state < 5:
-            danger_state = 0
+        danger_state = 0
+        if (cartTheta < 340 and cartTheta > 320 or cartTheta > 20 and cartTheta < 40):
+            danger_state = 1
+        # print(danger_state)
         return (cartX_state, cartXdot_state, cartTheta_state, cartThetadot_state), danger_state, cartTheta
 
     def get_action(self, state, episode, env, pole_theta, mlp=None):
@@ -64,18 +65,19 @@ class SarsaModel():
         de la tabla Q
         '''
         epsilon = max(self.epsilon_final, self.epsilon_inicial * self.decay_rate**episode)
-        if np.random.rand() < epsilon:
+        if np.random.rand() < epsilon and epsilon != self.epsilon_final:
             action = env.action_space.sample()
         else:
             values = np.array([self.Q[state,a] for a in range(2)])            
             action = np.argmax(values)
-            if mlp:
-                prediction = mlp.predict_data({
-                    'states': state, 'actions': action, 'pole_theta': pole_theta
-                })
-                if prediction == 1:
-                    if action == 1: action = 0
-                    else: action = 1
+        if mlp:
+            prediction = mlp.predict_data({
+                'states': state, 'actions': action, 'pole_theta': pole_theta
+            })
+            print(prediction)
+            if prediction == 1:
+                if action == 1: action = 0
+                else: action = 1
         return action
 
     def update(self, current_state, action, reward, next_state, next_action):

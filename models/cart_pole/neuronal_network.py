@@ -27,10 +27,10 @@ class MLP():
         Nc = (Nw - Ns) / (Ne + Ns + 1)
         return int(Nc)
 
-    def train(self, data):        
-        hidden_layers = self.get_number_of_neurons(len(data['states']), 2, 1)
-        regr = MLPRegressor(hidden_layer_sizes=hidden_layers, activation='logistic',
-                            random_state=None, max_iter=5000, learning_rate_init=0.01)
+    def train(self, data):
+        hidden_layers = self.get_number_of_neurons(len(data['states']), 6, 1)
+        regr = MLPRegressor(hidden_layer_sizes=hidden_layers, activation='relu', solver="adam",
+                            random_state=None, max_iter=5000, learning_rate_init=0.001)
 
         X_train, Y_train = self.parse_data_train(data)
         regr.fit(X_train, Y_train)
@@ -44,8 +44,8 @@ class MLP():
             , cartX[0], cartXdot[0], cartTheta[0], cartThetadot[0]
         ])
         Y_pred = self.model.predict([X])
-        if Y_pred < 0.5:
-            Y_pred = 0
-        else:
+        if Y_pred > 0.3:
             Y_pred = 1
+        else:
+            Y_pred = 0
         return Y_pred
