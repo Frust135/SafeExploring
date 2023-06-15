@@ -36,8 +36,9 @@ def get_dic_per_array(array):
     return dic
 
 def create_fits(x, data):    
-    fit_reward = np.polyfit(x, data, 2)
-    return np.poly1d(fit_reward)(x)
+    # fit_reward = np.polyfit(x, data, 2)
+    # return np.poly1d(fit_reward)(x)
+    return data
 
 def create_graph_with_average(
         array_data_with_mlp, array_data_without_mlp, 
@@ -56,7 +57,8 @@ def create_graph_with_average(
     ax1.fill_between(x, 
         create_fits(x, data_with_mlp['min']), 
         create_fits(x, data_with_mlp['max']), 
-        color='lightblue', alpha=0.2)
+        color='lightblue', alpha=0.2)    
+
     
     ax1.plot(x, create_fits(x, data_without_mlp['average']), color='salmon', label='Promedio sin MLP')
     ax1.fill_between(x, 
@@ -68,6 +70,7 @@ def create_graph_with_average(
     ax1.set_xlabel('Episodio')
     ax1.set_ylabel('Recompensa')
     ax1.legend()
+    # ax1.set_yticks(range(0, 201, 50))
     ax1.grid(True)
 
     ax2.plot(x, create_fits(x, data_danger_with_mlp['average']), color='blue', label='Promedio con MLP')
@@ -88,7 +91,7 @@ def create_graph_with_average(
     ax2.legend()
     ax2.grid(True)    
         
-
+    # plt.yticks(range(0, 201, 50))  # Establecer los ticks en rangos de 50
     plt.show()
 
     

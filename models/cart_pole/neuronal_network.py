@@ -30,7 +30,7 @@ class MLP():
     def train(self, data):
         hidden_layers = self.get_number_of_neurons(len(data['states']), 6, 1)
         regr = MLPRegressor(hidden_layer_sizes=hidden_layers, activation='relu', solver="adam",
-                            random_state=None, max_iter=5000, learning_rate_init=0.001)
+                            random_state=None, max_iter=5000, learning_rate_init=0.01)
 
         X_train, Y_train = self.parse_data_train(data)
         regr.fit(X_train, Y_train)

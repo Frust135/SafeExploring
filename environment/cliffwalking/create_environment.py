@@ -53,15 +53,9 @@ def cliff_walking_normal(mlp=None):
             if finished:
                 break
         # env.run(actions)
-        text = 'Episodio: {0} - Recompensa acumulada: {1}'.format(
-            episode, sum(rewards))
         aux_reward += sum(rewards)
-        data_graph_danger_state.append((episode, aux_danger_state))
-        data_graph_reward.append((episode, sum(rewards)))
-        # print(text)
-
-    # print('#################')
-    # print('Recompensa total acumulada: {0}'.format(aux_reward))
+        data_graph_danger_state.append(aux_danger_state)
+        data_graph_reward.append(sum(rewards))
     return data_graph_reward, data_graph_danger_state
 
 
@@ -72,7 +66,7 @@ def cliff_walking_controlled():
     from .cliffwalking import CliffwalkingEnviorment
     from models.cliffwalking.neuronal_network import MLP
     from models.cliffwalking.model import SarsaModel
-    from utils.create_graph import create_graph
+    from utils.create_graph import create_graph_with_average
 
     # Escenario
     red_flags = [
@@ -128,8 +122,19 @@ def cliff_walking_controlled():
     }
     mlp = MLP()
     mlp.train(data)
-    data_without_mlp, data_danger_without_mlp = cliff_walking_normal()
-    data_with_mlp, data_danger_with_mlp = cliff_walking_normal(mlp)
-    create_graph(data_with_mlp, data_without_mlp,
-                 data_danger_with_mlp, data_danger_without_mlp)
+    array_data_with_mlp = []
+    array_data_without_mlp = []
+    array_data_danger_with_mlp = []
+    array_data_danger_without_mlp = []
+    for episode in range(10):
+        data_without_mlp, data_danger_without_mlp = cliff_walking_normal()
+        data_with_mlp, data_danger_with_mlp = cliff_walking_normal(mlp)
+
+        array_data_with_mlp.append(data_with_mlp)
+        array_data_without_mlp.append(data_without_mlp)
+        array_data_danger_with_mlp.append(data_danger_with_mlp)
+        array_data_danger_without_mlp.append(data_danger_without_mlp)        
+    create_graph_with_average(
+        array_data_with_mlp, array_data_without_mlp, array_data_danger_with_mlp, array_data_danger_without_mlp
+    )
     return True

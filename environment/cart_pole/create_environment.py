@@ -5,12 +5,13 @@ import time
 
 def cart_pole_normal(mlp=None):
     from models.cart_pole.model import SarsaModel
+    from utils.create_graph import create_graph_with_average
     env = gym.make("CartPole-v1", render_mode='rgb_array')
     model_sarsa = SarsaModel()
     data_graph_reward = []
     data_graph_danger = []
-    for episode in range(500):
-        # if mlp:
+    for episode in range(350):
+        # if mlp:        
         #     env = gym.make("CartPole-v1", render_mode='human')
         observation = env.reset()
         state, danger_state, pole_theta = model_sarsa.discretize_state(observation[0])
@@ -32,7 +33,6 @@ def cart_pole_normal(mlp=None):
         data_graph_reward.append(rewards)
         data_graph_danger.append(danger_states)
         # print('Episode: {0} - Recompensa: {1} - Estado Peligroso: {2}'.format(episode, rewards, danger_states))
-    # create_graph([(1,1)],data_graph_reward, [(1,1)],  data_graph_danger)
     return data_graph_reward, data_graph_danger
 
 
@@ -46,7 +46,7 @@ def cart_pole_controlled():
     pole_theta_array = []
     actions_array = []
     danger_state_array = []
-    for episode in range(5000):
+    for episode in range(500):
         state, danger_state, pole_theta = model_sarsa.discretize_state(env.reset()[0])
         action = model_sarsa.get_action(state, 0, env, pole_theta)
         for i in range(200):
