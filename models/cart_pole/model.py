@@ -74,7 +74,7 @@ class SarsaModel():
             prediction = mlp.predict_data({
                 'states': state, 'actions': action, 'pole_theta': pole_theta
             })
-            print(prediction)
+            # print(prediction)
             if prediction == 1:
                 if action == 1: action = 0
                 else: action = 1
