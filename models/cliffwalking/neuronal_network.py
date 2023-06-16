@@ -1,6 +1,6 @@
 import numpy as np
 from sklearn.utils import shuffle
-from sklearn.neural_network import MLPRegressor
+from sklearn.neural_network import MLPRegressor, MLPClassifier
 
 
 class MLP():
@@ -26,7 +26,7 @@ class MLP():
 
     def train(self, data):
         hidden_layers = self.get_number_of_neurons(len(data['states']), 4, 1)
-        regr = MLPRegressor(hidden_layer_sizes=hidden_layers, activation='logistic',
+        regr = MLPClassifier(hidden_layer_sizes=hidden_layers, activation='logistic',
                             random_state=None, max_iter=5000, learning_rate_init=0.01)
 
         X_train, Y_train = self.parse_data_train(data)
@@ -39,9 +39,4 @@ class MLP():
                      data['x_locations'], data['y_locations']])
         # X = X.transpose()
         Y_pred = self.model.predict([X])
-        
-        if Y_pred < 0.5:
-            Y_pred = 0
-        else:
-            Y_pred = 1
         return Y_pred

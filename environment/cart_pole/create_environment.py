@@ -4,42 +4,50 @@ import time
 
 
 def cart_pole_normal(mlp=None):
+    from utils.validate_model import validate_model_cart_pole
     from models.cart_pole.model import SarsaModel
-    from utils.create_graph import create_graph_with_average
     env = gym.make("CartPole-v1", render_mode='rgb_array')
     model_sarsa = SarsaModel()
     data_graph_reward = []
     data_graph_danger = []
-    for episode in range(350):
-        # if mlp:        
+    data_validate_model = []
+    for episode in range(500):
+        # if mlp:
         #     env = gym.make("CartPole-v1", render_mode='human')
         observation = env.reset()
         state, danger_state, pole_theta = model_sarsa.discretize_state(observation[0])
         action = model_sarsa.get_action(state, 1, env, pole_theta, mlp)
         rewards = 0
-        danger_states = 0        
+        danger_states = 0
         for i in range(200):
             # if mlp:
-            #     time.sleep(.2)
+            #     time.sleep(.6)
             raw_state, reward, terminated, truncated, info = env.step(action)
             next_action = model_sarsa.get_action(state, episode, env, pole_theta, mlp)
             next_state, danger_state, pole_theta = model_sarsa.discretize_state(raw_state)
 
             model_sarsa.update(state, action, reward, next_state, next_action)
+            data_validate_model.append({
+                'states': state, 
+                'actions': action, 
+                'pole_theta': pole_theta, 
+                'danger_state': danger_state
+            })
             state = next_state
             action = next_action
             rewards += reward
-            danger_states += danger_state
+            danger_states += danger_state            
         data_graph_reward.append(rewards)
         data_graph_danger.append(danger_states)
-        # print('Episode: {0} - Recompensa: {1} - Estado Peligroso: {2}'.format(episode, rewards, danger_states))
+    if mlp:
+        validate_model_cart_pole(mlp, data_validate_model)
     return data_graph_reward, data_graph_danger
 
 
 def cart_pole_controlled():
     from models.cart_pole.model import SarsaModel
     from models.cart_pole.neuronal_network import MLP
-    from utils.create_graph import create_graph_with_average
+    from utils.create_graph import create_graph_with_average    
     env = gym.make("CartPole-v1", render_mode='rgb_array')
     model_sarsa = SarsaModel(controlled=True)
     states_array = []
@@ -53,7 +61,6 @@ def cart_pole_controlled():
             raw_state, reward, terminated, truncated, info = env.step(action)
             next_action = model_sarsa.get_action(state, episode, env, pole_theta)
             next_state, danger_state, pole_theta = model_sarsa.discretize_state(raw_state)
-
             model_sarsa.update(state, action, reward, next_state, next_action)
             states_array.append(state)
             actions_array.append(action)
@@ -75,10 +82,9 @@ def cart_pole_controlled():
     array_data_without_mlp = []
     array_data_danger_with_mlp = []
     array_data_danger_without_mlp = []
-    for episode in range(10):
+    for episode in range(5):
         data_without_mlp, data_danger_without_mlp = cart_pole_normal()
-        data_with_mlp, data_danger_with_mlp = cart_pole_normal(mlp)
-
+        data_with_mlp, data_danger_with_mlp = cart_pole_normal(mlp)        
         array_data_with_mlp.append(data_with_mlp)
         array_data_without_mlp.append(data_without_mlp)
         array_data_danger_with_mlp.append(data_danger_with_mlp)

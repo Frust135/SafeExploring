@@ -1,6 +1,6 @@
 import numpy as np
 from sklearn.utils import shuffle
-from sklearn.neural_network import MLPRegressor
+from sklearn.neural_network import MLPRegressor, MLPClassifier
 
 
 class MLP():
@@ -14,8 +14,8 @@ class MLP():
         '''
         cartX, cartXdot, cartTheta, cartThetadot = zip(*data['states'])
         X = np.stack([
-            data['pole_theta'], data['actions']
-            , cartX, cartXdot, cartTheta, cartThetadot
+            data['pole_theta'], data['actions'],
+            cartTheta, cartThetadot
         ])
         X = X.transpose()
         Y = data['danger_state']
@@ -28,8 +28,8 @@ class MLP():
         return int(Nc)
 
     def train(self, data):
-        hidden_layers = self.get_number_of_neurons(len(data['states']), 6, 1)
-        regr = MLPRegressor(hidden_layer_sizes=hidden_layers, activation='relu', solver="adam",
+        hidden_layers = self.get_number_of_neurons(len(data['states']), 4, 1)
+        regr = MLPClassifier(hidden_layer_sizes=hidden_layers, activation='logistic',
                             random_state=None, max_iter=5000, learning_rate_init=0.01)
 
         X_train, Y_train = self.parse_data_train(data)
@@ -40,12 +40,8 @@ class MLP():
     def predict_data(self, data):
         cartX, cartXdot, cartTheta, cartThetadot = zip(data['states'])
         X = np.stack([
-            data['pole_theta'], data['actions']
-            , cartX[0], cartXdot[0], cartTheta[0], cartThetadot[0]
-        ])
+            data['pole_theta'], data['actions'],
+            cartTheta[0], cartThetadot[0]
+        ])        
         Y_pred = self.model.predict([X])
-        if Y_pred > 0.3:
-            Y_pred = 1
-        else:
-            Y_pred = 0
         return Y_pred

@@ -5,6 +5,7 @@ def cliff_walking_normal(mlp=None):
     """
     from .cliffwalking import CliffwalkingEnviorment
     from models.cliffwalking.model import SarsaModel
+    from utils.validate_model import validate_model_cliff_walking
 
     # Escenario
     red_flags = [
@@ -26,10 +27,11 @@ def cliff_walking_normal(mlp=None):
                              n_states, n_actions, initial_state, goal_state)
     data_graph_reward = []
     data_graph_danger_state = []
-
+    data_validate_model = []
     for episode in range(250):
         aux_reward = 0
         aux_danger_state = 0
+        danger_state = 0
         # env = CliffwalkingEnviorment(
         #     px_width=768,
         #     px_height=256,
@@ -47,7 +49,16 @@ def cliff_walking_normal(mlp=None):
             actions.append(action)
             rewards.append(reward)
             if reward == -100:
+                danger_state = 1
                 aux_danger_state += 1
+            x_location, y_location = model_sarsa.get_location(state)
+            data_validate_model.append({
+                'states': state,
+                'actions': action,
+                'x_locations': x_location,
+                'y_locations': y_location,
+                'danger_state': danger_state
+            })
             action = next_action
             state = next_state
             if finished:
@@ -56,6 +67,8 @@ def cliff_walking_normal(mlp=None):
         aux_reward += sum(rewards)
         data_graph_danger_state.append(aux_danger_state)
         data_graph_reward.append(sum(rewards))
+    if mlp:
+        validate_model_cliff_walking(mlp, data_validate_model)
     return data_graph_reward, data_graph_danger_state
 
 
