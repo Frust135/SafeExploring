@@ -18,13 +18,17 @@ def validate_model_cart_pole(MLP, data_validate_model):
     matrix = confusion_matrix(original_data, predicted_data)
     precision = precision_score(original_data, predicted_data)
     recall = recall_score(original_data, predicted_data)
-    f1 = f1_score(original_data, predicted_data)    
+    f1 = f1_score(original_data, predicted_data)   
+    variance_predicted = np.var(predicted_data)
+    variance_original = np.var(original_data) 
     
     dic['accuracy'] = accuracy
     dic['matrix'] = matrix
     dic['precision'] = precision
     dic['recall'] = recall
     dic['f1'] = f1
+    dic['variance_predicted'] = variance_predicted
+    dic['variance_original'] = variance_original
     
     print('#'*10)
     print('Accuracy: ', accuracy)
@@ -32,6 +36,8 @@ def validate_model_cart_pole(MLP, data_validate_model):
     print('Precision: ', precision)
     print('Recall: ', recall)
     print('F1: ', f1)
+    print('Variance predicted: ', variance_predicted)
+    print('Variance original: ', variance_original)
     print('#'*10)
     return True
 
@@ -49,13 +55,17 @@ def validate_model_cliff_walking(MLP, data_validate_model):
     matrix = confusion_matrix(original_data, predicted_data)
     precision = precision_score(original_data, predicted_data)
     recall = recall_score(original_data, predicted_data)
-    f1 = f1_score(original_data, predicted_data)    
+    f1 = f1_score(original_data, predicted_data)
+    variance_predicted = np.var(predicted_data)
+    variance_original = np.var(original_data)
     
     dic['accuracy'] = accuracy
     dic['matrix'] = matrix
     dic['precision'] = precision
     dic['recall'] = recall
     dic['f1'] = f1
+    dic['variance_predicted'] = variance_predicted
+    dic['variance_original'] = variance_original
     
     print('#'*10)
     print('Accuracy: ', accuracy)
@@ -63,5 +73,7 @@ def validate_model_cliff_walking(MLP, data_validate_model):
     print('Precision: ', precision)
     print('Recall: ', recall)
     print('F1: ', f1)
+    print('Variance predicted: ', variance_predicted)
+    print('Variance original: ', variance_original)
     print('#'*10)
     return True
