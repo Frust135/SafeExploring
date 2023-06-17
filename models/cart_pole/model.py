@@ -19,6 +19,10 @@ class SarsaModel():
 
         self.Q = self.initialize_policy()
 
+        self.counter_action = 0
+        self.sum_action = 5
+        self.action = None
+
     def initialize_policy(self):
         """
         Inicializa la política del agente
@@ -63,20 +67,31 @@ class SarsaModel():
         '''
         Obtiene una acción en función del estado actual e iteración del agente, esta acción se obtiene
         de la tabla Q
-        '''
-        epsilon = max(self.epsilon_final, self.epsilon_inicial * self.decay_rate**episode)
-        if np.random.rand() < epsilon and epsilon != self.epsilon_final:
-            action = env.action_space.sample()
+        '''        
+        if self.counter_action == 0:
+            epsilon = max(self.epsilon_final, self.epsilon_inicial * self.decay_rate**episode)
+            if np.random.rand() < epsilon and epsilon != self.epsilon_final:
+                action = env.action_space.sample()
+            else:
+                values = np.array([self.Q[state,a] for a in range(2)])            
+                action = np.argmax(values)
+            if mlp:
+                prediction = mlp.predict_data({
+                    'states': state, 'actions': action, 'pole_theta': pole_theta
+                })
+                # print(prediction)
+                if prediction == 1:
+                    if action == 1: action = 0
+                    else: action = 1
+                    self.counter_action += self.sum_action
+                    self.action = action
         else:
-            values = np.array([self.Q[state,a] for a in range(2)])            
-            action = np.argmax(values)
-        if mlp:
-            prediction = mlp.predict_data({
-                'states': state, 'actions': action, 'pole_theta': pole_theta
-            })
-            if prediction == 1:
-                if action == 1: action = 0
-                else: action = 1
+            action = self.action
+            self.counter_action -= 1
+        # if action == 1: 
+        #     print('Derecha')
+        # else:
+        #     print('Izquierda')
         return action
 
     def update(self, current_state, action, reward, next_state, next_action):
