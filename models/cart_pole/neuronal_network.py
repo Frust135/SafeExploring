@@ -15,7 +15,7 @@ class MLP():
         cartX, cartXdot, cartTheta, cartThetadot = zip(*data['states'])
         X = np.stack([
             data['pole_theta'], data['actions'],
-            cartTheta, cartThetadot
+            cartTheta, cartThetadot, cartXdot
         ])
         X = X.transpose()
         Y = data['danger_state']
@@ -28,7 +28,7 @@ class MLP():
         return int(Nc)
 
     def train(self, data):
-        hidden_layers = self.get_number_of_neurons(len(data['states']), 4, 1)
+        hidden_layers = self.get_number_of_neurons(len(data['states']), 5, 1)
         regr = MLPClassifier(hidden_layer_sizes=hidden_layers, activation='logistic',
                             random_state=None, max_iter=5000, learning_rate_init=0.01)
 
@@ -41,7 +41,8 @@ class MLP():
         cartX, cartXdot, cartTheta, cartThetadot = zip(data['states'])
         X = np.stack([
             data['pole_theta'], data['actions'],
-            cartTheta[0], cartThetadot[0]
+            cartTheta[0], cartThetadot[0], cartXdot[0]
         ])        
         Y_pred = self.model.predict([X])
+        # print(Y_pred)
         return Y_pred

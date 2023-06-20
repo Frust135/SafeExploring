@@ -13,14 +13,14 @@ class SarsaModel():
         self.decay_rate = 0.995
 
         self.cart_position = np.linspace(-4.8, 4.8, 0)
-        self.cart_velocity = np.linspace(-4, 4, 0)
+        self.cart_velocity = np.linspace(-4, 4, 2)
         self.pole_angle = np.linspace(0, 360, 90)
         self.pole_angular_velocity = np.linspace(-4, 4, 8)
 
         self.Q = self.initialize_policy()
 
         self.counter_action = 0
-        self.sum_action = 5
+        self.sum_action = 1
         self.action = None
 
     def initialize_policy(self):
@@ -58,17 +58,21 @@ class SarsaModel():
         cartTheta_state = int(np.digitize(cartTheta, self.pole_angle))
         cartThetadot_state = int(np.digitize(cartThetadot, self.pole_angular_velocity))
         danger_state = 0
+        # if self.controlled and (cartTheta < 352 or cartTheta > 8):
+        #     danger_state = 1
         if (cartTheta < 350 and cartTheta > 320 or cartTheta > 10 and cartTheta < 40):
             danger_state = 1
         # print(danger_state)
-        return (cartX_state, cartXdot_state, cartTheta_state, cartThetadot_state), danger_state, cartTheta
+        return (cartX_state, cartXdot_state, cartTheta_state, cartThetadot_state), cartTheta
 
     def get_action(self, state, episode, env, pole_theta, mlp=None):
         '''
         Obtiene una acción en función del estado actual e iteración del agente, esta acción se obtiene
         de la tabla Q
-        '''        
-        if self.counter_action == 0:
+        '''
+        if self.controlled:
+            action = env.action_space.sample()
+        elif self.counter_action == 0:
             epsilon = max(self.epsilon_final, self.epsilon_inicial * self.decay_rate**episode)
             if np.random.rand() < epsilon and epsilon != self.epsilon_final:
                 action = env.action_space.sample()
@@ -79,12 +83,16 @@ class SarsaModel():
                 prediction = mlp.predict_data({
                     'states': state, 'actions': action, 'pole_theta': pole_theta
                 })
-                # print(prediction)
+                # if action == 1: 
+                #     print('Predicción:', prediction, 'Acción: Derecha')
+                # else:
+                #     print('Predicción:', prediction, 'Acción: Izquierda')
+                # print('Predicción:', prediction, 'Acción:', action)
                 if prediction == 1:
                     if action == 1: action = 0
                     else: action = 1
                     self.counter_action += self.sum_action
-                    self.action = action
+                    self.action = action                
         else:
             action = self.action
             self.counter_action -= 1
