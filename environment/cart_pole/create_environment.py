@@ -98,7 +98,9 @@ def cart_pole_controlled():
         array_data_danger_with_mlp.append(data_danger_with_mlp)
         array_data_danger_without_mlp.append(data_danger_without_mlp)        
     create_graph_with_average(
-        array_data_with_mlp, array_data_without_mlp, array_data_danger_with_mlp, array_data_danger_without_mlp
+        'CartPole',
+        array_data_with_mlp, array_data_without_mlp, 
+        array_data_danger_with_mlp, array_data_danger_without_mlp
     )
     return True
 
