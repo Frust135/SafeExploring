@@ -57,12 +57,6 @@ class SarsaModel():
         cartXdot_state = int(np.digitize(cartXdot, self.cart_velocity))
         cartTheta_state = int(np.digitize(cartTheta, self.pole_angle))
         cartThetadot_state = int(np.digitize(cartThetadot, self.pole_angular_velocity))
-        danger_state = 0
-        # if self.controlled and (cartTheta < 352 or cartTheta > 8):
-        #     danger_state = 1
-        if (cartTheta < 350 and cartTheta > 320 or cartTheta > 10 and cartTheta < 40):
-            danger_state = 1
-        # print(danger_state)
         return (cartX_state, cartXdot_state, cartTheta_state, cartThetadot_state), cartTheta
 
     def get_action(self, state, episode, env, pole_theta, mlp=None):
@@ -83,11 +77,6 @@ class SarsaModel():
                 prediction = mlp.predict_data({
                     'states': state, 'actions': action, 'pole_theta': pole_theta
                 })
-                # if action == 1: 
-                #     print('Predicción:', prediction, 'Acción: Derecha')
-                # else:
-                #     print('Predicción:', prediction, 'Acción: Izquierda')
-                # print('Predicción:', prediction, 'Acción:', action)
                 if prediction == 1:
                     if action == 1: action = 0
                     else: action = 1
@@ -96,10 +85,6 @@ class SarsaModel():
         else:
             action = self.action
             self.counter_action -= 1
-        # if action == 1: 
-        #     print('Derecha')
-        # else:
-        #     print('Izquierda')
         return action
 
     def update(self, current_state, action, reward, next_state, next_action):

@@ -44,5 +44,4 @@ class MLP():
             cartTheta[0], cartThetadot[0]#, cartXdot[0]
         ])        
         Y_pred = self.model.predict([X])
-        # print(Y_pred)
         return Y_pred
