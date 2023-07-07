@@ -16,7 +16,7 @@ class MLP():
                      data['x_locations'], data['y_locations']])
         X = X.transpose()
         Y = data['danger_state']
-        X, Y = shuffle(X, Y, random_state=0)
+        X, Y = shuffle(X, Y, random_state=1)
         return X, Y
 
     def get_number_of_neurons(self, number, Ne, Ns):
@@ -26,8 +26,8 @@ class MLP():
 
     def train(self, data):
         hidden_layers = self.get_number_of_neurons(len(data['states']), 4, 1)
-        regr = MLPClassifier(hidden_layer_sizes=hidden_layers, activation='logistic',
-                            random_state=None, max_iter=5000, learning_rate_init=0.01)
+        regr = MLPClassifier(hidden_layer_sizes=190, activation='logistic',
+                            random_state=1, max_iter=5000, learning_rate_init=0.01)
 
         X_train, Y_train = self.parse_data_train(data)
         regr.fit(X_train, Y_train)

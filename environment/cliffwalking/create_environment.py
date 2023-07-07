@@ -7,14 +7,6 @@ def cliff_walking_normal(mlp=None):
     from models.cliffwalking.model import SarsaModel
     from utils.validate_model import validate_model_cliff_walking
 
-    # Escenario
-    red_flags = [
-        [1, 3], [2, 3], [3, 3], [4, 3], [5, 3],
-        [6, 3], [7, 3], [8, 3], [9, 3], [10, 3],
-    ]
-
-    green_flags = [[11, 3]]
-
     # Sarsa
     n_states = 48
     n_actions = 4
@@ -32,13 +24,6 @@ def cliff_walking_normal(mlp=None):
         aux_reward = 0
         aux_danger_state = 0
         danger_state = 0
-        # env = CliffwalkingEnviorment(
-        #     px_width=768,
-        #     px_height=256,
-        #     player_position=[0, 3],
-        #     red_flags=red_flags,
-        #     green_flags=green_flags,
-        # )
         rewards = []
         actions = []
         state = model_sarsa.initial_state
@@ -63,7 +48,6 @@ def cliff_walking_normal(mlp=None):
             state = next_state
             if finished:
                 break
-        # env.run(actions)
         aux_reward += sum(rewards)
         data_graph_danger_state.append(aux_danger_state)
         data_graph_reward.append(sum(rewards))
@@ -81,13 +65,6 @@ def cliff_walking_controlled():
     from models.cliffwalking.model import SarsaModel
     from utils.create_graph import create_graph_with_average
 
-    # Escenario
-    red_flags = [
-        [1, 3], [2, 3], [3, 3], [4, 3]
-    ]
-
-    green_flags = [[5, 3]]
-
     # Sarsa
     n_states = 24
     n_actions = 4
@@ -97,7 +74,9 @@ def cliff_walking_controlled():
     row_environment = 4
     range_danger = [20, 21, 22, 23]
     model_sarsa_controlled = SarsaModel(
-        col_environment, row_environment, range_danger, n_states, n_actions, initial_state, goal_state)
+        col_environment, row_environment, range_danger, 
+        n_states, n_actions, initial_state, goal_state, True
+    )
 
     states_array = []
     actions_array = []
@@ -105,21 +84,10 @@ def cliff_walking_controlled():
     y_locations_array = []
     danger_state_array = []
 
-    for episode in range(20):
+    for episode in range(100):
         actions = []
-        # env = CliffwalkingEnviorment(
-        #     px_width=384,
-        #     px_height=256,
-        #     player_position=[0, 3],
-        #     red_flags=red_flags,
-        #     green_flags=green_flags,
-        # )
         states, actions, rewards, danger_state, x_locations, y_locations = model_sarsa_controlled.run_controlled(
             episode)
-        # env.run(actions)
-        text = 'Episodio: {0} - Recompensa acumulada: {1}'.format(
-            episode, sum(rewards))
-        # print(text)
 
         states_array.extend(states)
         actions_array.extend(actions)
@@ -133,6 +101,7 @@ def cliff_walking_controlled():
         'y_locations': y_locations_array,
         'danger_state': danger_state_array
     }
+
     mlp = MLP()
     mlp.train(data)
     array_data_with_mlp = []

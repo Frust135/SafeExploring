@@ -14,15 +14,12 @@ def cart_pole_normal(mlp=None):
     data_graph_danger = []
     data_validate_model = []
     for episode in range(500):
-        # print(episode)
-        # if mlp:
-        #     env = gym.make("CartPole-v1", render_mode='human')
         observation = env.reset()
         state, pole_theta = model_sarsa.discretize_state(observation[0])
         action = model_sarsa.get_action(state, 1, env, pole_theta, mlp)
         rewards = 0
         danger_states = 0
-        for i in range(200):
+        for i in range(100):
             danger_state = get_danger_state(pole_theta, action)
             next_action = model_sarsa.get_action(state, episode, env, pole_theta, mlp)
             raw_state, reward, terminated, truncated, info = env.step(action)

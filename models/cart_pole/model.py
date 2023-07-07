@@ -12,8 +12,8 @@ class SarsaModel():
         self.epsilon_inicial = 1
         self.decay_rate = 0.995
 
-        self.cart_position = np.linspace(-4.8, 4.8, 0)
-        self.cart_velocity = np.linspace(-4, 4, 2)
+        self.cart_position = np.linspace(-4.8, 4.8, 1)
+        self.cart_velocity = np.linspace(-4, 4, 1)
         self.pole_angle = np.linspace(0, 360, 90)
         self.pole_angular_velocity = np.linspace(-4, 4, 8)
 

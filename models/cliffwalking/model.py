@@ -2,8 +2,9 @@ import numpy as np
 
 
 class SarsaModel():
-    def __init__(self, col_len, row_len, range_danger, n_states, n_actions, initial_state, goal_state):
+    def __init__(self, col_len, row_len, range_danger, n_states, n_actions, initial_state, goal_state, controlled=False):
         self.environment = Environment(col_len, row_len)
+        self.controlled = controlled
 
         self.col_len = col_len
         self.row_len = row_len
@@ -98,9 +99,7 @@ class SarsaModel():
         actions = self.get_qvalue_actions(state)
         epsilon = max(self.epsilon_final, self.epsilon_inicial *
                       self.decay_rate**episode)
-        if np.random.rand() < epsilon:
-            # if past_action:
-            #     actions[past_action] = 0
+        if self.controlled or np.random.rand() < epsilon:
             valid_actions = np.where(actions != 0)[0]
             action = np.random.choice(valid_actions)
         else:

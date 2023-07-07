@@ -37,10 +37,12 @@ def get_dic_per_array(array):
     dic['min'] = get_min_per_array(array)    
     return dic
 
-def create_fits(x, data):    
-    # fit_reward = np.polyfit(x, data, 2)
-    # return np.poly1d(fit_reward)(x)
-    return data
+def convolve_date(data, filter_size):
+    output = np.zeros(len(data))
+    for i in range(len(data)):
+        ventana = data[max(0, i-filter_size+1):i+1]
+        output[i] = np.mean(ventana)
+    return output
 
 def create_graph_with_average(
         name_problem,
@@ -50,42 +52,68 @@ def create_graph_with_average(
     data_with_mlp = get_dic_per_array(array_data_with_mlp)
     data_without_mlp = get_dic_per_array(array_data_without_mlp)
     data_danger_with_mlp = get_dic_per_array(array_data_danger_with_mlp)
-    data_danger_without_mlp = get_dic_per_array(array_data_danger_without_mlp)
-    x = np.arange(len(data_with_mlp['average']))
+    data_danger_without_mlp = get_dic_per_array(array_data_danger_without_mlp)    
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
+    date_time = datetime.today()
+    if name_problem == 'CliffWalking':
+        name_file = 'figures/cliffwalking/reward-{}-{}.pdf'.format(date_time, name_problem)
+        name_file2 = 'figures/cliffwalking/danger-{}-{}.pdf'.format(date_time, name_problem)
+        filter_size = 10
+    elif name_problem == 'CartPole':
+        name_file = 'figures/cart_pole/reward-{}-{}.pdf'.format(date_time, name_problem)
+        name_file2 = 'figures/cart_pole/danger-{}-{}.pdf'.format(date_time, name_problem)
+        filter_size = 30
+
+    fig, ax1 = plt.subplots(figsize=(8, 8))
+    data_with_mlp_average = convolve_date(data_with_mlp['average'], filter_size)
+    data_with_mlp_min = convolve_date(data_with_mlp['min'], filter_size)
+    data_with_mlp_max = convolve_date(data_with_mlp['max'], filter_size)
     
+    x = np.arange(len(data_with_mlp_average))
 
-    ax1.plot(x, create_fits(x, data_with_mlp['average']), color='royalblue', label='Promedio de recompensas con CA')
+    ax1.plot(data_with_mlp_average, color='royalblue', label='Promedio de recompensas con CA')
     ax1.fill_between(x, 
-        create_fits(x, data_with_mlp['min']), 
-        create_fits(x, data_with_mlp['max']), 
-        color='lightblue', alpha=0.2)    
+        data_with_mlp_min, 
+        data_with_mlp_max, 
+        color='lightblue', alpha=0.2)
 
-    
-    ax1.plot(x, create_fits(x, data_without_mlp['average']), color='salmon', label='Promedio de recompensas')
+    data_without_mlp_average = convolve_date(data_without_mlp['average'], filter_size)
+    data_without_mlp_min = convolve_date(data_without_mlp['min'], filter_size)
+    data_without_mlp_max = convolve_date(data_without_mlp['max'], filter_size)
+
+    ax1.plot(data_without_mlp_average, color='salmon', label='Promedio de recompensas')
     ax1.fill_between(x, 
-        create_fits(x, data_without_mlp['min']), 
-        create_fits(x, data_without_mlp['max']), 
+        data_without_mlp_min, 
+        data_without_mlp_max, 
         color='lightsalmon', alpha=0.2)
     
     ax1.set_title('Recompensa acumulada por episodio')
     ax1.set_xlabel('Episodio')
     ax1.set_ylabel('Recompensa')
     ax1.legend()
-    # ax1.set_yticks(range(0, 201, 50))
+    plt.xlim(0, len(data_with_mlp['average']))
     ax1.grid(True)
+    plt.savefig(name_file, format="pdf", bbox_inches="tight")
 
-    ax2.plot(x, create_fits(x, data_danger_with_mlp['average']), color='royalblue', label='Promedio de cantidad de estados peligrosos con CA')
+    fig, ax2 = plt.subplots(figsize=(8, 8))
+    data_danger_with_mlp_average = convolve_date(data_danger_with_mlp['average'], filter_size)
+    data_danger_with_mlp_min = convolve_date(data_danger_with_mlp['min'], filter_size)
+    data_danger_with_mlp_max = convolve_date(data_danger_with_mlp['max'], filter_size)
+
+    ax2.plot(x, data_danger_with_mlp_average, color='royalblue', label='Promedio de cantidad de estados peligrosos con CA')
     ax2.fill_between(x, 
-        create_fits(x, data_danger_with_mlp['min']), 
-        create_fits(x, data_danger_with_mlp['max']), 
+        data_danger_with_mlp_min, 
+        data_danger_with_mlp_max, 
         color='lightblue', alpha=0.2)
     
-    ax2.plot(x, create_fits(x, data_danger_without_mlp['average']), color='salmon', label='Promedio de cantidad de estados peligrosos')
+    data_danger_without_mlp_average = convolve_date(data_danger_without_mlp['average'], filter_size)
+    data_danger_without_mlp_min = convolve_date(data_danger_without_mlp['min'], filter_size)
+    data_danger_without_mlp_max = convolve_date(data_danger_without_mlp['max'], filter_size)
+    
+    ax2.plot(x, data_danger_without_mlp_average, color='salmon', label='Promedio de cantidad de estados peligrosos')
     ax2.fill_between(x, 
-        create_fits(x, data_danger_without_mlp['min']), 
-        create_fits(x, data_danger_without_mlp['max']), 
+        data_danger_without_mlp_min, 
+        data_danger_without_mlp_max, 
         color='lightsalmon', alpha=0.2)
     
     ax2.set_title('Cantidad de estados peligrosos acumulados por episodio')
@@ -93,14 +121,7 @@ def create_graph_with_average(
     ax2.set_ylabel('Cantidad estados peligrosos')
     ax2.legend()
     ax2.grid(True)
-    date_time = datetime.today()
-    if name_problem == 'CliffWalking':
-        name_file = 'figures/cliffwalking/{}-{}.pdf'.format(date_time, name_problem)
-    elif name_problem == 'CartPole':
-        name_file = 'figures/cart_pole/{}-{}.pdf'.format(date_time, name_problem)
-    plt.savefig(name_file, format="pdf", bbox_inches="tight")
-    plt.show()
-
     
-
-    
+    plt.xlim(0, len(data_with_mlp['average']))
+    plt.savefig(name_file2, format="pdf", bbox_inches="tight")
+    # plt.show()

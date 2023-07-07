@@ -9,7 +9,7 @@ def validate_model_cart_pole(MLP, data_validate_model):
         cartX, cartXdot, cartTheta, cartThetadot = zip(data['states'])
         X = np.stack([
             data['pole_theta'], data['actions'],
-            cartTheta[0], cartThetadot[0], cartXdot[0]
+            cartTheta[0], cartThetadot[0]#, cartXdot[0]
         ])
         Y_pred = MLP.model.predict([X])
         predicted_data.append(Y_pred)    
