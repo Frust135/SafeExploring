@@ -130,3 +130,4 @@ dmypy.json
 
 # Para los pdfs generados
 *.pdf
+**/.DS_Store
