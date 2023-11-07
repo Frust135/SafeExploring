@@ -124,4 +124,4 @@ def create_graph_with_average(
     
     plt.xlim(0, len(data_with_mlp['average']))
     plt.savefig(name_file2, format="pdf", bbox_inches="tight")
-    # plt.show()
+    plt.show()
